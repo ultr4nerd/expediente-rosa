@@ -43,7 +43,7 @@ export function CartillaCard({ data }: { data: CartillaData }) {
       <div className="flex items-center gap-sm">
         <img src={appIcon} alt="" className="size-control" />
         <span className="flex flex-col">
-          <span className="type-body-strong">Expediente <span className="text-brand-text">Rosa</span></span>
+          <span className="type-body-strong text-brand-text">Hilo</span>
           <span className="type-caption text-muted-foreground">Cartilla EIRA</span>
         </span>
       </div>
