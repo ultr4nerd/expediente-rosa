@@ -1,6 +1,6 @@
 // ISS-0013: result capture for the pathologist (citología: Bethesda) and the doctor
 // (revisión mamaria: BI-RADS + conducta a seguir). Appends `result.recorded` linked to the service.
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { CircleAlert, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,24 +24,7 @@ import {
   type ResultDraft,
   type ResultField,
 } from "@/domain/results";
-import { isTauri } from "@/platform";
-import { deviceInfo } from "@/platform/tauri";
-
-/** Device letter: from Rust in the desktop app, "A" in the browser. */
-export function useDevice(): string {
-  const [device, setDevice] = useState("A");
-  useEffect(() => {
-    if (!isTauri) return;
-    let alive = true;
-    deviceInfo()
-      .then((d) => alive && d.device && setDevice(d.device))
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, []);
-  return device;
-}
+import { useDevice } from "@/app/useDevice";
 
 const draftFrom = (s: ServiceRecord): ResultDraft =>
   s.result
