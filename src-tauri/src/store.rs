@@ -8,6 +8,10 @@ use serde_json::Value;
 
 pub const DEFAULT_DB_KEY: &str = "jornada-demo";
 pub const DB_FILE: &str = "expediente.db";
+/// Device letter of the fictitious seed (src/domain/seed.ts). Seed events are pre-existing office data,
+/// identical on every laptop: stored as already synced and never pushed (the central would reject their
+/// folio.assigned events and assign second folios to seed patients).
+pub const SEED_DEVICE: &str = "S";
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
@@ -79,6 +83,8 @@ impl Store {
                 let id = field(e, "id")?;
                 let ty = field(e, "type")?;
                 let patient = field(e, "patientId")?;
+                let is_seed = e.get("device").and_then(Value::as_str) == Some(SEED_DEVICE);
+                let synced = synced || is_seed;
                 added += stmt.execute(params![id, ty, patient, serde_json::to_string(e)?, synced as i64])?;
             }
         }
@@ -188,6 +194,17 @@ mod tests {
         let empty = s.list(3).unwrap();
         assert!(empty.events.is_empty());
         assert_eq!(empty.last_seq, 3);
+    }
+
+    #[test]
+    fn seed_events_are_stored_as_synced() {
+        let dir = tmp_dir("seed");
+        let mut s = Store::open(&dir, DEFAULT_DB_KEY).unwrap();
+        let mut seed = ev("seed-1");
+        seed["device"] = json!(SEED_DEVICE);
+        assert_eq!(s.append(&[seed, ev("a")], false).unwrap(), 2);
+        assert_eq!(s.pending_count().unwrap(), 1);
+        assert_eq!(s.pending_batch(10).unwrap()[0].0, "a");
     }
 
     #[test]

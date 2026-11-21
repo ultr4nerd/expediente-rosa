@@ -5,6 +5,7 @@ import { Cloud, CloudOff, Clock, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { SyncStatus } from "@/domain/ports";
 import { platform } from "@/platform";
+import { recordsSource } from "@/app/useRecords";
 
 export const DEFAULT_CENTRAL_URL = "http://localhost:8787";
 const URL_KEY = "er.centralUrl";
@@ -40,7 +41,10 @@ export async function syncNow(): Promise<void> {
   if (state.syncing) return;
   set({ syncing: true });
   try {
-    set({ status: await platform.sync.syncNow(state.centralUrl) });
+    const status = await platform.sync.syncNow(state.centralUrl);
+    set({ status });
+    // Re-project so pulled events (other device's patients, final folios) show up on every screen.
+    if (status.connectivity === "online") await recordsSource().refresh();
   } catch (e) {
     set({ status: { ...state.status, lastError: String(e) } });
   } finally {
