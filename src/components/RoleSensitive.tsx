@@ -20,7 +20,10 @@ export function RoleLocked({ label, className }: { label?: string; className?: s
     >
       <Lock aria-hidden="true" className="size-5 shrink-0" />
       <span aria-hidden="true" className="type-body-strong tracking-widest">••••</span>
-      <span className="type-caption">{LOCKED_TEXT}</span>
+      <span className="type-caption">
+        {label && <span className="font-semibold">{label} · </span>}
+        {LOCKED_TEXT}
+      </span>
     </div>
   );
 }

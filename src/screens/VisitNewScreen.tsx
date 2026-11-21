@@ -357,10 +357,7 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
               <ChipGroup id={fid("risk")} legend="16. Factores de riesgo" options={RISK} value={cito.risk}
                 onChange={(v) => setCito((c) => ({ ...c, risk: v }))} />
             ) : (
-              <div className="flex flex-col gap-sm">
-                <span className="type-label">16. Factores de riesgo</span>
-                <RoleLocked label="16. Factores de riesgo" />
-              </div>
+              <RoleLocked label="16. Factores de riesgo" />
             )}
             <ChoiceGroup id={fid("repeated")} name="repeated" legend="19. ¿Es muestra repetida?" value={cito.repeated}
               options={[{ value: "no", label: "No" }, { value: "si", label: "Sí" }]} onChange={(v) => setCito((c) => ({ ...c, repeated: v }))} />

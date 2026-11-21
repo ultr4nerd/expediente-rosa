@@ -15,6 +15,7 @@ import { isFinalFolio } from "@/domain/factory";
 import type { PatientRecord } from "@/domain/projection";
 import { cn } from "@/lib/utils";
 import { useDevice } from "@/app/useDevice";
+import { formatPhone } from "./PatientContact";
 
 const AFFILIATION_LABEL: Record<string, string> = { ninguno: "Ninguna", otro: "Otra", INSABI: "INSABI / IMSS-Bienestar" };
 
@@ -52,7 +53,7 @@ function IdentityColumn({ record, role }: { record: PatientRecord; role: string 
     ["Entidad de nacimiento", id.birthState || "Sin registro"],
     ["Municipio", id.municipality || "Sin registro"],
     ["Residencia habitual", id.residence || "Sin registro"],
-    ["Teléfono", id.phone || "Sin registro"],
+    ["Teléfono", id.phone ? formatPhone(id.phone) : "Sin registro"],
     ["Afiliación", AFFILIATION_LABEL[id.affiliation] ?? id.affiliation],
     ["Registrada en", record.created ? `Laptop ${record.created.device}` : "Sin registro"],
   ];
@@ -139,9 +140,11 @@ export function DuplicatesPanel({ className, source }: { className?: string; sou
     <section aria-labelledby="duplicates-title" className={cn("flex flex-col gap-md", className)}>
       <Card className="border-warning-border bg-warning-subtle">
         <CardHeader>
-          <CardTitle id="duplicates-title" className="flex items-center gap-sm type-heading text-on-warning-subtle">
-            <Users aria-hidden="true" className="size-5" />
-            Posibles duplicados ({proposals.length})
+          <CardTitle>
+            <h2 id="duplicates-title" className="flex items-center gap-sm type-heading text-on-warning-subtle">
+              <Users aria-hidden="true" className="size-5" />
+              Posibles duplicados ({proposals.length})
+            </h2>
           </CardTitle>
         </CardHeader>
         <CardContent className="type-body text-on-warning-subtle">
