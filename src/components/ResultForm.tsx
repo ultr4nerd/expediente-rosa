@@ -26,10 +26,16 @@ import {
 } from "@/domain/results";
 import { useDevice } from "@/app/useDevice";
 
+/** A saved Bethesda may be free text (seed, paper capture); map it back to its category code. */
+const bethesdaValue = (v?: string) => {
+  if (!v || BETHESDA.some((b) => b.value === v)) return v;
+  return BETHESDA.find((b) => v.startsWith(b.value) || b.label.startsWith(v))?.value;
+};
+
 const draftFrom = (s: ServiceRecord): ResultDraft =>
   s.result
     ? {
-        bethesda: s.result.bethesda,
+        bethesda: bethesdaValue(s.result.bethesda),
         birads: s.result.birads,
         followUp: s.result.followUp,
         repeatStudy: s.result.repeatStudy ?? false,

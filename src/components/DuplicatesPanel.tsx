@@ -12,6 +12,7 @@ import { useSession } from "@/app/session";
 import { useRecords, type RecordsSource } from "@/app/useRecords";
 import { confirmLink, findDuplicateProposals, rejectLink, type LinkProposal } from "@/domain/duplicates";
 import { isFinalFolio } from "@/domain/factory";
+import { isSeedFolio } from "@/domain/seed";
 import type { PatientRecord } from "@/domain/projection";
 import { cn } from "@/lib/utils";
 import { useDevice } from "@/app/useDevice";
@@ -32,7 +33,7 @@ export function DuplicatesFolio({ record }: { record: Pick<PatientRecord, "folio
     return (
       <span className="flex flex-wrap items-center gap-sm">
         <span className="type-folio rounded-control border border-border bg-surface-raised px-sm py-xs">{record.finalFolio}</span>
-        {record.provisionalFolio && (
+        {record.provisionalFolio && !isSeedFolio(record.provisionalFolio) && (
           <span className="type-caption text-muted-foreground">antes {record.provisionalFolio}</span>
         )}
       </span>
