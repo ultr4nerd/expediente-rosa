@@ -8,6 +8,7 @@ import { PatientNewScreen } from "@/screens/PatientNewScreen";
 import { PatientScreen } from "@/screens/PatientScreen";
 import { VisitNewScreen } from "@/screens/VisitNewScreen";
 import { SyncScreen } from "@/screens/SyncScreen";
+import { FollowUpScreen } from "@/screens/FollowUpScreen";
 
 function screenFor(route: Route) {
   switch (route.name) {
@@ -16,6 +17,7 @@ function screenFor(route: Route) {
     case "patient": return <PatientScreen patientId={route.patientId} />;
     case "visit-new": return <VisitNewScreen patientId={route.patientId} />;
     case "sync": return <SyncScreen />;
+    case "follow-up": return <FollowUpScreen />;
     case "login": return null;
   }
 }

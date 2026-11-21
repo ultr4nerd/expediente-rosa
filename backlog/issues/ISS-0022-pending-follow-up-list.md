@@ -2,7 +2,7 @@
 id: ISS-0022
 title: Pending follow-up list
 kind: feature
-status: todo
+status: done
 priority: P1
 area: ui
 parent: ISS-0001
@@ -22,14 +22,17 @@ EIRA must contact patients who need follow-up. Derive from result.recorded: BIRA
 ## Scope
 
 ## Acceptance criteria
-- [ ] list derived from projected results with reason and due date
-- [ ] opens the patient record
-- [ ] no diagnosis text outside the clinical roles
-- [ ] domain tests
+- [x] list derived from projected results with reason and due date
+- [x] opens the patient record
+- [x] no diagnosis text outside the clinical roles
+- [x] domain tests
 
 ## Notes
 
 ## Log
+- 2026-11-21 12:50 thread-c: started; plan in progress/ISS-0022.md
+- 2026-11-21 12:52 thread-c: verify passed: pnpm verify
+- 2026-11-21 12:52 thread-c: done: Shipped src/domain/followUp.ts (ruleFor: BIRADS 4-5 suspicious, abnormal Bethesda, BIRADS 0/imagen_complementaria, re...
 
 ## Outcome
-<!-- filled by `backlog done`: what shipped, how it was verified, learnings, follow-ups -->
+Shipped src/domain/followUp.ts (ruleFor: BIRADS 4-5 suspicious, abnormal Bethesda, BIRADS 0/imagen_complementaria, repeatStudy, BIRADS 3/evaluacion_6_meses = study date + 6 months, mastografia; most urgent rule per result; a newer study of the same type closes it; survivors only; pendingFollowUps sorted overdue first then due date and priority; nextSuggestedVisit for the Cartilla) and the Seguimiento screen (route follow-up, nav entry) with patient, folio, category (clinical roles) or 'Requiere seguimiento' (capturista), due date and 'Abrir expediente'. Seed: 3 patients (BIRADS 3, BIRADS 0, ASC-US) now appear; seed mama results default to rutina_1_anio. 10 domain tests. Not clicked through in the browser.

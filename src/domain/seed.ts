@@ -80,6 +80,13 @@ const age = (birthDate: string, on: string) => {
   return y - by - (m < bm || (m === bm && d < bd) ? 1 : 0);
 };
 
+/** Seed patients (1-based) with results that need follow-up, so the Seguimiento list is not empty (ISS-0022). */
+const SEED_FOLLOW_UP: Record<number, { cito?: string; mama?: { birads: 0 | 3; followUp: "imagen_complementaria" | "evaluacion_6_meses" } }> = {
+  6: { mama: { birads: 3, followUp: "evaluacion_6_meses" } },
+  9: { mama: { birads: 0, followUp: "imagen_complementaria" } },
+  14: { cito: "ASC-US (células escamosas atípicas de significado indeterminado)" },
+};
+
 /** Deterministic seed events (same output on every call and every device). */
 export function seedEvents(): AnyEvent[] {
   const events: AnyEvent[] = [];
@@ -160,7 +167,10 @@ export function seedEvents(): AnyEvent[] {
         };
         const cytologyNumber = `CIT-${year}-${pad(num, 4)}`;
         events.push(newEvent("service.recorded", patientId, { serviceId, visitId, serviceType: "citologia", fields, takenByLicense: "FIC-1234567", cytologyNumber }, at(medico), opts()));
-        events.push(newEvent("result.recorded", patientId, { serviceId, bethesda: "Negativo para lesión intraepitelial o malignidad", followUp: "rutina_1_anio", repeatStudy: false }, at(patologo), opts()));
+        const abnormal = SEED_FOLLOW_UP[num]?.cito;
+        events.push(newEvent("result.recorded", patientId, abnormal
+          ? { serviceId, bethesda: abnormal, followUp: "evaluacion_6_meses", repeatStudy: true }
+          : { serviceId, bethesda: "Negativo para lesión intraepitelial o malignidad", followUp: "rutina_1_anio", repeatStudy: false }, at(patologo), opts()));
       } else {
         const hadMammogram = age(sp.birthDate, jornada.date) >= 40 && i % 2 === 0;
         const fields: MamaFields = {
@@ -172,7 +182,10 @@ export function seedEvents(): AnyEvent[] {
           thermography: "simetrico",
         };
         events.push(newEvent("service.recorded", patientId, { serviceId, visitId, serviceType: "mama", fields }, at(medico), opts()));
-        events.push(newEvent("result.recorded", patientId, { serviceId, birads: i % 7 === 3 ? 2 : 1, followUp: hadMammogram ? "rutina_1_anio" : "mastografia" }, at(medico), opts()));
+        const special = SEED_FOLLOW_UP[num]?.mama;
+        events.push(newEvent("result.recorded", patientId, special
+          ? { serviceId, birads: special.birads, followUp: special.followUp }
+          : { serviceId, birads: i % 7 === 3 ? 2 : 1, followUp: "rutina_1_anio" }, at(medico), opts()));
       }
     }
 
