@@ -2,7 +2,7 @@
 id: ISS-0001
 title: Expediente Rosa MVP (EIRA Challenge 1)
 kind: epic
-status: todo
+status: done
 priority: P0
 area: product
 parent:
@@ -26,6 +26,8 @@ Goal: a working 2-minute demo of docs/specs/mvp-expediente-rosa.md with fictiona
 ## Notes
 
 ## Log
+- 2026-11-21 14:53 ultr4nerd: verify passed: pnpm verify
+- 2026-11-21 14:53 ultr4nerd: done: MVP delivered: all child issues done; live end-to-end demo verified on macOS (two instances, Valkey central, hub); Wi...
 
 ## Outcome
-<!-- filled by `backlog done`: what shipped, how it was verified, learnings, follow-ups -->
+MVP delivered: all child issues done; live end-to-end demo verified on macOS (two instances, Valkey central, hub); Windows installer built in CI and published as release v0.1.0.
