@@ -120,7 +120,7 @@ small { font-size: 22px; color: var(--muted); }
     </g>
   </g>
   <text x="132" y="62" font-family="'Montserrat Variable', Montserrat, 'Segoe UI', system-ui, sans-serif" font-size="44" font-weight="700" letter-spacing="-0.5" fill="#2a2220">Expediente <tspan fill="#b7426c">Rosa</tspan></text>
-  <text x="134" y="98" font-family="'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Next', 'Segoe UI', system-ui, sans-serif" font-size="20" fill="#6b5e58">con EIRA Movimiento Rosa</text>
+  <text x="134" y="98" font-family="'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Next', 'Segoe UI', system-ui, sans-serif" font-size="20" fill="#6b5e58">para EIRA Movimiento Rosa</text>
 </svg>
     <h1>Un solo expediente por paciente, con o sin señal.</h1>
     <p class="big muted">Para las jornadas de EIRA Movimiento Rosa.</p>
@@ -204,7 +204,7 @@ small { font-size: 22px; color: var(--muted); }
     <text x="1012" y="312" class="t" font-size="28">Un script Lua, atómico:</text>
     <text x="1012" y="358" font-size="28">1. Sin duplicados (SET NX por id)</text>
     <text x="1012" y="400" font-size="28">2. Agrega al stream (XADD)</text>
-    <text x="1012" y="442" font-size="28">3. Folio del año (INCR, sin huecos)</text>
+    <text x="1012" y="442" font-size="28">3. Folio del año (INCR, sin choques)</text>
     <rect x="984" y="490" width="236" height="64" rx="12" fill="#ffffff" stroke="#2a2220" stroke-width="2.5"/>
     <text x="1008" y="533" class="t" font-size="30">2026-0143</text>
     <text x="1240" y="533" font-size="28" fill="#6b5e58">folio definitivo</text>
@@ -226,6 +226,8 @@ small { font-size: 22px; color: var(--muted); }
         <li>Autollenado del historial</li>
         <li>Roles en la interfaz</li>
         <li>Respaldo, CSV sin datos personales, hoja en papel</li>
+        <li>Seguimiento y bitácora de accesos</li>
+        <li>Hub entre 2 instancias (misma Mac)</li>
       </ul>
     </div>
     <div class="col sim">
@@ -240,8 +242,8 @@ small { font-size: 22px; color: var(--muted); }
     <div class="col no">
       <h3>✕ No probado</h3>
       <ul>
-        <li>Correr en Windows (aún sin build)</li>
-        <li>Hub LAN entre laptops (no construido)</li>
+        <li>Correr en Windows (instalador de CI, sin ejecutar)</li>
+        <li>Hub con 2 laptops por Wi-Fi</li>
         <li>Central en AWS (hoy: Docker local)</li>
         <li>Impresión en papel real</li>
       </ul>
@@ -259,7 +261,7 @@ small { font-size: 22px; color: var(--muted); }
       <ul>
         <li>Build de Windows firmado y una jornada con 2 laptops</li>
         <li>Inicio de sesión real y una clave por laptop</li>
-        <li>Folio y QR en la Cartilla EIRA</li>
+        <li>Validar folio y QR de la Cartilla con EIRA</li>
       </ul>
     </div>
     <div class="card">
@@ -267,7 +269,7 @@ small { font-size: 22px; color: var(--muted); }
       <ul>
         <li><b>$0 en licencias</b>: código abierto (MIT)</li>
         <li>Laptops que EIRA ya tiene</li>
-        <li>Valkey gestionado en AWS: <b>desde ~US$6/mes</b> más uso <small>(ElastiCache Serverless, precio de lista)</small></li>
+        <li>Central con Valkey en un servidor pequeño: <b>~USD 10 a 30/mes</b> <small>(estimado)</small></li>
         <li>Un servidor pequeño para la API (Hono)</li>
       </ul>
     </div>

@@ -28,7 +28,7 @@ EIRA lleva prevención de cáncer de mama y cervicouterino a comunidades de Jali
 | **Reconoce a la paciente sin adivinar** | Busca por nombre, folio o teléfono, aunque haya errores de dedo o abreviaturas ("Ma."). Muestra **por qué** coincide cada resultado y **una persona decide**: "Es la misma persona" o "Es otra persona". Nunca fusiona expedientes por su cuenta. |
 | **No vuelve a pedir lo que ya sabe** | En la segunda visita llena solo lo que ya conoce: la identidad, el tipo de citología ("subsecuente"), el número citológico anterior, la última mastografía y los antecedentes que no cambian. Solo se capturan los datos de hoy. |
 | **Funciona todo el día sin internet** | Cada laptop guarda los expedientes **cifrados** en su disco. Al volver la señal (normalmente en la noche), sincroniza con una central y recibe el **folio EIRA definitivo**, sin números repetidos entre laptops. |
-| **Cuida los datos sensibles** | La capturista no ve los antecedentes sensibles: solo el personal médico. Nada se borra. Cada cambio, y cada vez que alguien revela un dato sensible, queda registrado con quién, cuándo y desde qué laptop. |
+| **Cuida los datos sensibles** | La capturista no ve los antecedentes sensibles; el personal médico y la administración sí. Nada se borra. Cada cambio, y cada vez que alguien revela un dato sensible, queda registrado con quién, cuándo y desde qué laptop. |
 | **No deja a nadie sin seguimiento** | Una lista muestra a las pacientes que deben volver (por ejemplo, una evaluación a seis meses) y cuándo. |
 
 ## Así se ve
@@ -56,7 +56,7 @@ EIRA lleva prevención de cáncer de mama y cervicouterino a comunidades de Jali
 | **Lista de seguimiento**: pacientes que requieren volver (por ejemplo, BI-RADS 3 a seis meses), sin mostrar hallazgos a la capturista | | |
 | **Bitácora de accesos**: cada vez que el personal médico revela un dato sensible queda registrado; solo administración ve la lista | | |
 | **Cartilla imprimible** con folio y un código QR que solo contiene el folio | | |
-| **Hub entre laptops**: una laptop sirve a la otra por la red local, sin internet (probado en vivo) | | |
+| **Hub entre laptops**: una laptop sirve a la otra por la red local, sin internet (probado con dos instancias en la misma Mac; falta probarlo con dos laptops por Wi-Fi) | | |
 
 ## Cómo probarlo
 
@@ -69,7 +69,7 @@ pnpm install
 docker compose -f server/compose.yaml up -d
 
 # 2. Laptop A
-pnpm tauri dev
+ER_DATA_DIR=/tmp/er-a ER_DEVICE=A pnpm tauri dev
 
 # 3. Laptop B (otra ventana, mismo equipo, con datos separados)
 ER_DATA_DIR=/tmp/er-b ER_DEVICE=B src-tauri/target/debug/expediente-rosa
@@ -113,7 +113,7 @@ Más detalle técnico en [`docs/`](docs/INDEX.md): decisiones de diseño, el con
 
 - **Datos mínimos:** los campos salen de los formatos reales de EIRA.
 - **Cifrado** en la laptop.
-- **Permisos por rol:** solo el personal médico ve los antecedentes sensibles.
+- **Permisos por rol:** la capturista no ve los antecedentes sensibles; el personal médico y la administración sí. Solo administración puede descargar el respaldo completo.
 - **Nada se borra:** cada cambio guarda autor, rol, laptop y hora.
 - **Exportaciones sin datos personales:** el CSV solo lleva conteos.
 - **Sin fusiones automáticas:** el nombre nunca se usa como identificador.
@@ -135,6 +135,7 @@ Más detalle técnico en [`docs/`](docs/INDEX.md): decisiones de diseño, el con
 
 **Riesgos**
 
+- La central y el hub no tienen autenticación ni cifrado en tránsito: hoy solo deben usarse en la red propia de la jornada. El respaldo JSON va sin cifrar (por eso solo lo descarga administración).
 - No se ha probado en sus laptops Windows ni con WebView2 sin conexión.
 - Los instaladores no van firmados, así que Windows mostrará una advertencia.
 - Una laptop robada está protegida por el cifrado, pero la clave de la demo es fija.
@@ -165,6 +166,7 @@ Los tomamos de la guía y de la mentoría del hackathon:
 - ¿Una misma paciente pasa por las dos laptops el mismo día? Si es así, el hub entre laptops se vuelve prioritario.
 - ¿El patólogo captura los resultados en una laptop de EIRA o desde su laboratorio?
 - ¿Qué trae impreso la Cartilla EIRA? ¿Podría llevar el folio o un código QR?
+- Si dos expedientes resultan ser la misma persona, uno de los dos folios definitivos queda como alias y ese número no se reutiliza. ¿Es aceptable ese hueco en el consecutivo, como un oficio cancelado?
 
 ## Créditos
 

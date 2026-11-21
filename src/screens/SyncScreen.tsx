@@ -17,6 +17,7 @@ import {
 import { platform } from "@/platform";
 import { ConflictPanel } from "@/components/ConflictPanel";
 import { BackupPanel } from "@/components/BackupPanel";
+import { useSession } from "@/app/session";
 import { ContingencyButton } from "@/components/ContingencySheets";
 import { DuplicatesPanel } from "@/components/DuplicatesPanel";
 import { HubToggle } from "@/components/HubToggle";
@@ -30,6 +31,9 @@ function formatDateTime(iso?: string): string {
 
 export function SyncScreen() {
   const { status, syncing, centralUrl } = useSync();
+  const { user } = useSession();
+  // The JSON backup holds every record unencrypted: only administration may export or restore it.
+  const isAdmin = user?.role === "admin";
   const [draft, setDraft] = useState(centralUrl);
   const online = status.connectivity === "online";
 
@@ -121,7 +125,7 @@ export function SyncScreen() {
       </Card>
       <ConflictPanel />
       <HubToggle />
-      <BackupPanel />
+      {isAdmin && <BackupPanel />}
       <div><ContingencyButton /></div>
     </section>
   );
