@@ -88,7 +88,7 @@ Para ver solo la interfaz sin Rust ni Docker: `pnpm dev` y abre http://localhost
 
 **Para reiniciar la demo:** `scripts/demo-reset.sh` borra los datos de las dos laptops y de la central. Al arrancar se cargan 30 pacientes ficticias, entre ellas María Ejemplo y María Ejemplar.
 
-**Pruebas:** `pnpm verify` corre los 99 tests de TypeScript y las revisiones del proyecto. En `src-tauri/`, `cargo test` corre los 13 de Rust. En `server/`, `npm test` corre los 12 de la central contra un Valkey real.
+**Pruebas:** `pnpm verify` corre los 101 tests de TypeScript y las revisiones del proyecto. En `src-tauri/`, `cargo test` corre los 13 de Rust. En `server/`, `npm test` corre los 12 de la central contra un Valkey real.
 
 ## Cómo funciona
 
