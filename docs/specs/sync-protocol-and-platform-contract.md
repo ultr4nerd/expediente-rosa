@@ -38,6 +38,7 @@ The JSON form of `EventEnvelope` in `src/domain/events.ts`. All keys are camelCa
 
 - `id` is a UUID v4 created on the device (`crypto.randomUUID()`) and is the dedup key in every layer.
 - Rust treats `payload` as opaque JSON. It only reads `id`, `type` and `patientId`.
+- `record.viewed` (ISS-0023) is an audit event: a clinical role pressed "Mostrar" on sensitive data. Payload `{ section: "sensitive_history" | "clinical_service" | "result", serviceId?: string }`, never the data itself. It syncs like any other event (Rust and the central do not inspect it). The projection keeps it out of the timeline and exposes it as `accessLog`, which the UI shows only to `admin`.
 
 ### Tauri commands (Rust → TS, `src/platform/tauri.ts`)
 

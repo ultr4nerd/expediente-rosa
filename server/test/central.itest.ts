@@ -149,6 +149,16 @@ describe("central", () => {
     expect(res.body).toEqual({ accepted: [], duplicates: [folio.id] });
   });
 
+  it("record.viewed (ISS-0023) round-trips unchanged: payloads are opaque to the central", async () => {
+    const view = ev("record.viewed", randomUUID(), "B", {
+      role: "medico",
+      payload: { section: "result", serviceId: "s-1" },
+    });
+    expect((await push("B", [view])).body).toEqual({ accepted: [view.id], duplicates: [] });
+    const { events } = await pull("0");
+    expect(events).toEqual([view]);
+  });
+
   it("GET /stats reports stream length and folio counter", async () => {
     await push("A", [ev("patient.created", randomUUID(), "A")]);
     const res = await app.request("/stats?year=2026");

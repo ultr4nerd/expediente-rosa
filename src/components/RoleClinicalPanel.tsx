@@ -12,6 +12,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { canSeeSensitive, useSession } from "@/app/session";
 import { useRecords } from "@/app/useRecords";
+import { useDevice } from "@/app/useDevice";
+import { createViewOnce, recordViewed } from "@/domain/access";
+import { RoleAccessLog } from "./RoleAccessLog";
 import type { CitologiaFields, MamaFields, Role, StableHistory } from "@/domain/events";
 import { resolvePatient, type ServiceRecord, type VisitRecord } from "@/domain/projection";
 import { canRecordResult, canSeeClinical } from "@/domain/results";
@@ -40,25 +43,35 @@ const CITOLOGY_KIND: Record<CitologiaFields["citologyKind"], string> = {
 };
 
 export function RoleClinicalPanel({ patientId }: { patientId: string }) {
-  const { user } = useSession();
-  const { model } = useRecords();
+  const { user, jornadaId } = useSession();
+  const { model, append } = useRecords();
+  const device = useDevice();
+  // One per screen visit: a reveal is logged once per section even if hidden and shown again.
+  const [viewOnce] = useState(createViewOnce);
   const record = resolvePatient(model, patientId);
   if (!user || !record) return null;
   const role = user.role;
 
+  const logReveal = () => {
+    if (!viewOnce("sensitive_history")) return;
+    const actor = { device, author: user.id, role, jornadaId };
+    void append([recordViewed(record.patientId, "sensitive_history", actor)]).catch(() => undefined);
+  };
+
   return (
     <div className="flex flex-col gap-lg">
-      <RoleHistory history={record.history} role={role} />
+      <RoleHistory history={record.history} role={role} onReveal={logReveal} />
       {record.visits.length === 0 ? (
         <p className="type-body text-muted-foreground">Aún no hay visitas con servicios para esta paciente.</p>
       ) : (
         [...record.visits].reverse().map((v) => <VisitServices key={v.visitId} visit={v} role={role} />)
       )}
+      <RoleAccessLog entries={record.accessLog} role={role} />
     </div>
   );
 }
 
-export function RoleHistory({ history, role }: { history: StableHistory; role: Role }) {
+export function RoleHistory({ history, role, onReveal }: { history: StableHistory; role: Role; onReveal?: () => void }) {
   return (
     <Card>
       <CardHeader>
@@ -71,7 +84,7 @@ export function RoleHistory({ history, role }: { history: StableHistory; role: R
           <DataRow label="Familiares con cáncer de mama" value={list(history.familyBreastCancer)} />
           <DataRow label="Vacuna VPH" value={yesNo(history.hpvVaccinated)} />
         </dl>
-        <RoleSensitive allowed={canSeeSensitive(role)} label="Antecedentes gineco-obstétricos sensibles">
+        <RoleSensitive allowed={canSeeSensitive(role)} label="Antecedentes gineco-obstétricos sensibles" onReveal={onReveal}>
           <dl className="grid gap-md sm:grid-cols-2">
             <DataRow label="Vida sexual activa" value={yesNo(history.sexuallyActive)} />
             <DataRow label="Inicio de vida sexual (edad)" value={history.sexualDebutAge} />

@@ -122,7 +122,11 @@ export interface EventPayloads {
   "folio.assigned": { folio: string; provisionalFolio: string };
   "patients.linked": { survivorId: string; aliasId: string; reason: string };
   "patients.marked_distinct": { otherPatientId: string };
+  /** Audit (ISS-0023): a clinical role revealed sensitive data. Never contains the data itself. */
+  "record.viewed": { section: ViewedSection; serviceId?: string };
 }
+
+export type ViewedSection = "sensitive_history" | "clinical_service" | "result";
 
 export type EventType = keyof EventPayloads;
 

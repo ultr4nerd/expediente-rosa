@@ -9,6 +9,7 @@ import type {
   MamaFields,
   Role,
   ServiceType,
+  ViewedSection,
   StableHistory,
 } from "./events";
 import { isFinalFolio } from "./factory";
@@ -116,6 +117,13 @@ export interface PatientRecord {
   visits: VisitRecord[];
   /** Every event of this record (and its aliases), oldest first. */
   timeline: TimelineEntry[];
+  /** Audit of sensitive-data views (`record.viewed`), oldest first. Kept out of `timeline`; the UI shows it to admin only. */
+  accessLog: AccessEntry[];
+}
+
+export interface AccessEntry extends Provenance {
+  section: ViewedSection;
+  serviceId?: string;
 }
 
 export interface RecordsModel {
@@ -145,6 +153,7 @@ const LABELS: Record<EventType, string> = {
   "folio.assigned": "Folio definitivo asignado",
   "patients.linked": "Expedientes vinculados",
   "patients.marked_distinct": "Marcadas como personas distintas",
+  "record.viewed": "Consulta de datos sensibles",
 };
 
 const SERVICE_LABEL: Record<ServiceType, string> = {
@@ -220,6 +229,7 @@ function newPatient(patientId: string, at: string): PatientRecord {
     updatedAt: at,
     visits: [],
     timeline: [],
+    accessLog: [],
   };
 }
 
@@ -284,6 +294,11 @@ export function project(input: readonly AnyEvent[]): RecordsModel {
   // Pass 2: everything in (at, id) order.
   for (const e of events) {
     const p = get(e.patientId, e.at);
+    // A view is an audit entry, not a change to the record.
+    if (e.type === "record.viewed") {
+      p.accessLog.push({ ...provenance(e), section: e.payload.section, serviceId: e.payload.serviceId });
+      continue;
+    }
     if (e.at > p.updatedAt) p.updatedAt = e.at;
     const prov = provenance(e);
 
@@ -352,8 +367,9 @@ export function project(input: readonly AnyEvent[]): RecordsModel {
   for (const s of services.values()) visits.get(s.visitId)?.services.push(s);
   for (const v of visits.values()) get(v.patientId, v.at).visits.push(v);
 
-  // Own timelines.
+  // Own timelines (views are audit, not clinical history: see accessLog).
   for (const e of events) {
+    if (e.type === "record.viewed") continue;
     const entry: TimelineEntry = { ...provenance(e), type: e.type, patientId: e.patientId, label: labelFor(e, services) };
     if (e.type === "visit.recorded") entry.visitId = e.payload.visitId;
     if (e.type === "service.recorded") {
@@ -429,6 +445,7 @@ export function project(input: readonly AnyEvent[]): RecordsModel {
     root.visits.push(...alias.visits);
     const ids = new Set(root.timeline.map((t) => t.eventId));
     root.timeline.push(...alias.timeline.filter((t) => !ids.has(t.eventId)));
+    root.accessLog.push(...alias.accessLog);
     for (const d of alias.distinctFrom) if (!root.distinctFrom.includes(d)) root.distinctFrom.push(d);
     if (alias.updatedAt > root.updatedAt) root.updatedAt = alias.updatedAt;
   }
@@ -439,6 +456,7 @@ export function project(input: readonly AnyEvent[]): RecordsModel {
     p.visits.sort(byProv);
     for (const v of p.visits) v.services.sort(byProv);
     p.timeline.sort(byProv);
+    p.accessLog.sort(byProv);
     p.folioAliases = [...new Set(p.folioAliases)].filter((f) => f && f !== p.folio).sort();
     p.aliasIds.sort();
     p.distinctFrom = [...new Set(p.distinctFrom)].sort();
