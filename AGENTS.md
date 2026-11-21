@@ -28,6 +28,10 @@ Entry point for any agent (Claude Code, Codex, Gemini CLI, Cursor, Devin) or hum
 | `backlog/INDEX.md` | Open work (`pnpm backlog next`) | Picking what to do |
 | `progress/<ID>.md` | Live plan of an issue in progress | Resuming someone else's work |
 | `design/DESIGN.md` | Design system entry point (tokens in `design/tokens.json`) | Any UI work |
+| `docs/specs/sync-protocol-and-platform-contract.md` | Tauri commands, local schema, central HTTP API, folio assignment | Touching Rust store/sync, `server/`, or an event shape |
+| `src/domain/events.ts`, `src/domain/ports.ts` | Event and port contracts shared by every thread | Before writing code that produces or consumes events |
+| `src/platform/` | Tauri adapters and in-memory adapters (browser dev, tests) | Wiring UI to storage or sync |
+| `src/app/`, `src/screens/` | Navigation, simulated session, shell; one file per screen | Building a screen |
 | `src/domain/` | Pure TS domain: events, projection, matching, autofill, validation | Changing business rules |
 | `src-tauri/src/` | Rust: encrypted event store (SQLCipher) and sync transport | Storage, encryption, network |
 | `server/` | Central sync: Hono + Valkey (stream, dedup, folio counter) | Sync protocol or folio assignment |
@@ -58,3 +62,22 @@ pnpm verify                                      # typecheck + tests + docmap/ba
 8. UI uses semantic tokens only (`design/DESIGN.md`): no hex values, raw px or palette classes. `pnpm design check` must pass.
 9. Every demo-facing claim says what is real, simulated or untested. Do not overstate.
 10. `README.md` is for the judges: accessible Spanish. It covers what it is, the problem, a demo/screenshots, how to run it, the real / simulated / untested table, architecture in a few lines, risks, costs, operation, next steps and open questions. Agent and process detail belongs here and in `docs/`, never in the README.
+
+## Parallel work (several agents or threads at once)
+
+Each thread works one issue on its own branch in its own git worktree, and merges to `main` through a PR.
+
+1. **Branch and worktree.** Name the branch `iss-NNNN-<slug>` (e.g. `iss-0005-central-valkey`) and branch it from up-to-date `main`. Rebase on `main` before opening the PR and again before merging.
+2. **Own your files.** Stay inside your issue's area:
+   - `src-tauri/` → Rust issues.
+   - `server/` → central.
+   - `src/domain/` → domain issues; each one gets its own module file.
+   - `src/screens/<Screen>.tsx` → the issue named in its TODO.
+   - `src/components/<Feature>*.tsx` → new components for that feature.
+   - Shared files need a one-line reason in the PR: `src/App.tsx`, `src/app/*`, `src/domain/events.ts`, `src/domain/ports.ts`, `package.json`, `pnpm-lock.yaml`, `design/tokens.json`.
+3. **Contracts first.** `src/domain/events.ts`, `src/domain/ports.ts` and `docs/specs/sync-protocol-and-platform-contract.md` are the cross-thread contract. Changing one means updating the doc and calling it out in the PR title (`[contract]`).
+4. **New backlog issues are created on `main` only.** Issue IDs are allocated per branch, so two branches can create the same ID. On a branch, only `start`, `log`, `tick` and `done` your own issue.
+5. **Dependencies.** Run `pnpm add` only for your area, and commit the lockfile with the change. On a lockfile conflict, take `main`'s version and re-run `pnpm install`.
+6. **Develop without Rust.** `pnpm dev` runs the UI in a browser with the in-memory platform (`src/platform/memory.ts`), so UI and domain threads never wait on Rust or the central.
+7. **Done means:** `pnpm verify` green, a PR merged into `main`, and `pnpm backlog done` with an Outcome.
+
