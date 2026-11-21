@@ -21,16 +21,16 @@ async function poll() {
   } catch (e) {}
 }
 setInterval(poll, 400);
-// Arrow keys on the Mac move the deck locally: report it so the phone stays in sync.
-deck.addEventListener("load", () => {
-  deck.contentWindow.addEventListener("hashchange", () => {
+// Arrow keys on the Mac move the deck locally (replaceState, no hashchange): detect it and report it.
+setInterval(() => {
+  try {
     const n = parseInt(deck.contentWindow.location.hash.slice(1), 10);
     if (n && n !== current) {
       current = n;
       fetch("/api/state", { method: "POST", body: JSON.stringify({ slide: n }) }).catch(() => {});
     }
-  });
-});
+  } catch (e) {}
+}, 300);
 document.addEventListener("keydown", (e) => { if (e.key === "f") document.documentElement.requestFullscreen?.(); });
 </script>
 </body>
