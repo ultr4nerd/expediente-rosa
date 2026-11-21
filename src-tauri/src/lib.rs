@@ -67,6 +67,12 @@ fn hub_status(hub: State<'_, hub::HubState>) -> hub::HubInfo {
     hub.status()
 }
 
+/// `window.print()` is a no-op in the macOS WebView: print the window natively (Cartilla, contingency sheets).
+#[tauri::command]
+fn print_page(window: tauri::WebviewWindow) -> Result<(), String> {
+    window.print().map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn device_info(state: State<'_, AppState>) -> DeviceInfo {
     DeviceInfo { device: state.device.clone(), data_dir: state.data_dir.display().to_string() }
@@ -118,7 +124,7 @@ pub fn run() {
             app.manage(hub::HubState::default());
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![append_events, list_events, sync_now, sync_status, device_info, save_export, hub_start, hub_stop, hub_status])
+        .invoke_handler(tauri::generate_handler![append_events, list_events, sync_now, sync_status, device_info, print_page, save_export, hub_start, hub_stop, hub_status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
