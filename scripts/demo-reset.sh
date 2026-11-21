@@ -11,12 +11,16 @@ DATA_A=${ER_DATA_A:-/tmp/er-a}
 DATA_B=${ER_DATA_B:-/tmp/er-b}
 
 echo "› Closing running Expediente Rosa instances"
+pkill -f "tauri dev" 2>/dev/null || true   # its watcher would relaunch the app
 pkill -f "target/debug/expediente-rosa" 2>/dev/null || true
 pkill -f "target/release/expediente-rosa" 2>/dev/null || true
 
 echo "› Flushing the central"
 "${COMPOSE[@]}" up -d --wait valkey
 "${COMPOSE[@]}" exec -T valkey valkey-cli FLUSHALL >/dev/null
+# Start the yearly counter after the seed's historical folios so the demo shows 2026-0143, 2026-0144
+# (the pitch script). Seed folios are <year>-01NN and live only on the laptops.
+"${COMPOSE[@]}" exec -T valkey valkey-cli SET "er:folio:$(date +%Y)" "${ER_FOLIO_START:-142}" >/dev/null
 "${COMPOSE[@]}" down
 
 echo "› Wiping local data: $DATA_A $DATA_B"
