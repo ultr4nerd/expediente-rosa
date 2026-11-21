@@ -34,6 +34,7 @@ Single identity block (shared by the Pap smear and breast exam forms), accepted 
 - 2026-11-21 12:00 thread-d: Screen + identity domain helpers done; keyboard-only flow checked in browser
 - 2026-11-21 12:01 thread-d: verify passed: pnpm verify
 - 2026-11-21 12:01 thread-d: done: Shipped `src/screens/PatientNewScreen.tsx` (identity block once for both forms, live age, under-18 warning, privacy n...
+- 2026-11-21 12:09 ultr4nerd: Follow-up: save goes through recordsSource().append so the shared model sees the new patient
 
 ## Outcome
 Shipped `src/screens/PatientNewScreen.tsx` (identity block once for both forms, live age, under-18 warning, privacy notice with version 2026-05, provisional folio in the dashed warning style, Enter / Ctrl+S save, focus jumps to the first invalid field) and `src/domain/identity.ts` (+ tests: age, impossible dates, 12–110 age range, 10-digit phones, email shape, normalization). Saves `patient.created` + `privacy.accepted` through `platform.store` and navigates to the patient.
