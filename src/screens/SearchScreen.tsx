@@ -132,9 +132,8 @@ export function SearchScreen() {
       <header className="flex flex-wrap items-end justify-between gap-md">
         <div className="flex flex-col gap-xs">
           <h1 className="type-title">Buscar paciente</h1>
-          <p className="text-muted-foreground">Busca antes de registrar: así no se duplican expedientes.</p>
+          <p className="text-muted-foreground">Escribe su nombre, folio o teléfono. Si no la encuentras, aquí mismo podrás registrarla.</p>
         </div>
-        <Button variant="outline" onClick={newPatient}><UserPlus aria-hidden="true" />Registrar nueva paciente</Button>
       </header>
 
       <div role="search" className="flex flex-col gap-sm">
