@@ -1,4 +1,5 @@
 // Tauri commands for the encrypted event store and client sync. Contract: docs/specs/sync-protocol-and-platform-contract.md.
+mod hub;
 mod store;
 mod sync;
 
@@ -49,6 +50,23 @@ fn sync_status(state: State<'_, AppState>) -> Result<SyncStatus, StoreError> {
     sync::status(&state.store, &state.sync_mem)
 }
 
+/// ISS-0021: serve the central API from this laptop for peers on the same network.
+#[tauri::command]
+fn hub_start(app: tauri::AppHandle, hub: State<'_, hub::HubState>) -> Result<hub::HubInfo, String> {
+    let port = env_or("ER_HUB_PORT", &hub::DEFAULT_PORT.to_string()).parse().unwrap_or(hub::DEFAULT_PORT);
+    hub.start(port, std::sync::Arc::new(move |f| f(&app.state::<AppState>().store)))
+}
+
+#[tauri::command]
+fn hub_stop(hub: State<'_, hub::HubState>) -> hub::HubInfo {
+    hub.stop()
+}
+
+#[tauri::command]
+fn hub_status(hub: State<'_, hub::HubState>) -> hub::HubInfo {
+    hub.status()
+}
+
 #[tauri::command]
 fn device_info(state: State<'_, AppState>) -> DeviceInfo {
     DeviceInfo { device: state.device.clone(), data_dir: state.data_dir.display().to_string() }
@@ -97,9 +115,10 @@ pub fn run() {
                 device,
                 data_dir,
             });
+            app.manage(hub::HubState::default());
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![append_events, list_events, sync_now, sync_status, device_info, save_export])
+        .invoke_handler(tauri::generate_handler![append_events, list_events, sync_now, sync_status, device_info, save_export, hub_start, hub_stop, hub_status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
