@@ -5,67 +5,83 @@ import { Search, UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MatchCard } from "@/components/MatchCard";
-// Swap for src/domain/matching.ts (ISS-0007) + projection (ISS-0003) when they land; same shapes.
-import { findCandidates, matchablePatients, type MatchablePatient } from "@/components/MatchStub";
+import { useRecords } from "@/app/useRecords";
 import { useNavigation } from "@/app/navigation";
 import { useSession } from "@/app/session";
-import type { AnyEvent } from "@/domain/events";
 import { newEvent } from "@/domain/factory";
-import { isTauri, platform } from "@/platform";
+import { looksLikeFolio, matchPatients, searchByFolio, type MatchCandidate, type MatchQuery } from "@/domain/matching";
+import { isTauri } from "@/platform";
 import { deviceInfo } from "@/platform/tauri";
 import estadoVacio from "@/assets/illustrations/estado-vacio.webp";
+
+/** One box, several signals: a folio, or a name plus optional DD/MM/AAAA date and phone digits. */
+function search(text: string, candidates: readonly MatchCandidate[]) {
+  const t = text.trim();
+  if (t.length < 2) return [];
+  if (looksLikeFolio(t)) return searchByFolio(t, candidates);
+  const query: MatchQuery = {};
+  let rest = t;
+  const date = /(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/.exec(rest);
+  if (date) {
+    query.birthDate = `${date[3]}-${date[2].padStart(2, "0")}-${date[1].padStart(2, "0")}`;
+    rest = rest.replace(date[0], " ");
+  }
+  const digits = rest.replace(/\D/g, "");
+  if (digits.length >= 4) query.phone = digits;
+  const name = rest.replace(/[\d()+-]/g, " ").trim();
+  if (name.length >= 2) query.fullName = name;
+  if (!query.fullName && !query.phone && !query.birthDate) return [];
+  return matchPatients(query, candidates, { limit: 8 });
+}
 
 export function SearchScreen() {
   const { user, jornadaId } = useSession();
   const { go } = useNavigation();
-  const [events, setEvents] = useState<AnyEvent[] | null>(null);
+  const { model, version, append } = useRecords();
   const [query, setQuery] = useState("");
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Integration seam: replace with thread C's useRecords() when ISS-0003 lands.
-  useEffect(() => {
-    let alive = true;
-    platform.store.list().then(({ events }) => alive && setEvents(events));
-    inputRef.current?.focus();
-    return () => { alive = false; };
-  }, []);
+  useEffect(() => inputRef.current?.focus(), []);
 
-  const patients = useMemo(() => (events ? matchablePatients(events) : []), [events]);
-  const byId = useMemo(() => new Map(patients.map((p) => [p.patientId, p])), [patients]);
+  const loaded = version > 0;
+  const patients = useMemo(() => model.activeIds.map((id) => model.patients[id]), [model]);
+  const byId = (id: string) => model.patients[id];
 
   const results = useMemo(() => {
-    const found = findCandidates(query, patients).filter((c) => byId.has(c.patientId));
-    const top = found[0] && byId.get(found[0].patientId);
+    const found = search(query, patients);
+    const top = found[0]?.candidate;
     // Pairs a human already marked distinct are not suggested as the same person again: they go last, with a note.
-    const isDistinctFromTop = (p: MatchablePatient) => !!top && top.patientId !== p.patientId && top.distinctFrom.includes(p.patientId);
+    const isDistinctFromTop = (p: MatchCandidate) =>
+      !!top && top.patientId !== p.patientId && !!top.distinctFrom?.includes(p.patientId);
     return found
-      .map((c) => {
-        const p = byId.get(c.patientId)!;
-        return { candidate: c, patient: p, note: isDistinctFromTop(p) ? `Ya se confirmó que es otra persona que ${top!.identity.fullName}.` : undefined };
-      })
+      .map((r) => ({
+        reasons: r.reasons,
+        patient: r.candidate,
+        note: isDistinctFromTop(r.candidate) ? `Ya se confirmó que es otra persona que ${top!.identity.fullName}.` : undefined,
+      }))
       .sort((a, b) => Number(!!a.note) - Number(!!b.note));
-  }, [query, patients, byId]);
+  }, [query, patients]);
 
   // A new query starts a new decision.
   useEffect(() => setDismissed(new Set()), [query]);
 
-  async function chooseSame(chosen: MatchablePatient) {
+  async function chooseSame(chosen: MatchCandidate) {
     if (busy) return;
-    const others = [...dismissed].filter((id) => id !== chosen.patientId && !chosen.distinctFrom.includes(id));
+    const others = [...dismissed].filter((id) => id !== chosen.patientId && !chosen.distinctFrom?.includes(id));
     if (others.length && user) {
       setBusy(true);
       try {
         const device = isTauri ? (await deviceInfo().catch(() => ({ device: "A" }))).device : "A";
         const actor = { device, author: user.id, role: user.role, jornadaId };
-        await platform.store.append(
+        await append(
           others.map((otherPatientId) => newEvent("patients.marked_distinct", chosen.patientId, { otherPatientId }, actor)),
         );
         toast.success(
           others.length === 1
-            ? `Anotado: ${byId.get(others[0])?.identity.fullName} es otra persona.`
+            ? `Anotado: ${byId(others[0])?.identity.fullName} es otra persona.`
             : `Anotado: ${others.length} personas distintas.`,
         );
       } catch {
@@ -159,13 +175,13 @@ export function SearchScreen() {
       </div>
 
       <div aria-live="polite" className="sr-only">
-        {q.length >= 2 && events ? `${visible.length} ${visible.length === 1 ? "coincidencia" : "coincidencias"}` : ""}
+        {q.length >= 2 && loaded ? `${visible.length} ${visible.length === 1 ? "coincidencia" : "coincidencias"}` : ""}
       </div>
 
       {q.length < 2 ? (
         <EmptyState
           title="Empieza por buscarla"
-          body={events ? `Hay ${patients.length} ${patients.length === 1 ? "paciente" : "pacientes"} en esta laptop. Escribe al menos dos letras, un folio o los últimos 4 dígitos de su teléfono.` : "Cargando expedientes…"}
+          body={loaded ? `Hay ${patients.length} ${patients.length === 1 ? "paciente" : "pacientes"} en esta laptop. Escribe al menos dos letras, un folio o los últimos 4 dígitos de su teléfono.` : "Cargando expedientes…"}
         />
       ) : results.length === 0 ? (
         <EmptyState
@@ -176,11 +192,11 @@ export function SearchScreen() {
       ) : (
         <>
           <ul ref={listRef} onKeyDown={onListKey} className="flex flex-col gap-md" aria-label="Posibles coincidencias">
-            {results.map(({ candidate, patient, note }) => (
+            {results.map(({ reasons, patient, note }) => (
               <MatchCard
                 key={patient.patientId}
                 patient={patient}
-                candidate={candidate}
+                reasons={reasons}
                 note={note}
                 dismissed={dismissed.has(patient.patientId)}
                 onSame={() => chooseSame(patient)}

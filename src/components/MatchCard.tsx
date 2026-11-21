@@ -1,10 +1,10 @@
 // Match card (design/DESIGN.md "Match card"): who, why it matches, and a human decision. Never merges.
 import { forwardRef } from "react";
-import { Check, MapPin, UserCheck, UserX, Undo2 } from "lucide-react";
+import { Check, Minus, MapPin, UserCheck, UserX, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { isFinalFolio } from "@/domain/factory";
 import { cn } from "@/lib/utils";
-import type { MatchCandidate, MatchablePatient } from "./MatchStub";
+import type { MatchCandidate } from "@/domain/matching";
 
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
@@ -48,9 +48,13 @@ export function FolioTag({ folio, provisionalFolio }: { folio: string; provision
   );
 }
 
+/** Reasons that speak against the match ("Fecha de nacimiento distinta", "Otro municipio (…)"). */
+const isAgainst = (reason: string) => /distint|^Otro /i.test(reason);
+
 interface MatchCardProps {
-  patient: MatchablePatient;
-  candidate: MatchCandidate;
+  patient: MatchCandidate;
+  /** Spanish reasons from matching.ts, strongest first. */
+  reasons: string[];
   dismissed: boolean;
   /** Extra note, e.g. "Ya confirmada como otra persona que …". */
   note?: string;
@@ -60,7 +64,7 @@ interface MatchCardProps {
 }
 
 export const MatchCard = forwardRef<HTMLButtonElement, MatchCardProps>(function MatchCard(
-  { patient, candidate, dismissed, note, onSame, onOther, onUndo },
+  { patient, reasons, dismissed, note, onSame, onOther, onUndo },
   primaryRef,
 ) {
   const { identity } = patient;
@@ -98,10 +102,12 @@ export const MatchCard = forwardRef<HTMLButtonElement, MatchCardProps>(function 
       <div className="flex flex-col gap-sm rounded-md bg-muted p-md">
         <h3 className="type-label">Por qué coincide</h3>
         <ul className="flex flex-col gap-xs">
-          {candidate.reasons.map((r) => (
-            <li key={r.kind} className="flex items-center gap-sm">
-              <Check className="size-5 shrink-0 text-success" aria-hidden="true" />
-              {r.label}
+          {reasons.map((r) => (
+            <li key={r} className={cn("flex items-center gap-sm", isAgainst(r) && "text-muted-foreground")}>
+              {isAgainst(r)
+                ? <Minus className="size-5 shrink-0" aria-hidden="true" />
+                : <Check className="size-5 shrink-0 text-success" aria-hidden="true" />}
+              {r}
             </li>
           ))}
         </ul>
