@@ -351,21 +351,21 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
             </AutofillBox>
             <ChipGroup id={fid("gyneco")} legend="12. Estado gineco-obstétrico" options={GYNECO} value={cito.gyneco}
               onChange={(v) => setCito((c) => ({ ...c, gyneco: v }))} />
-            <ChipGroup id={fid("cervix")} legend="15. Observación del cuello uterino" options={CERVIX} value={cito.cervix}
+            <ChipGroup id={fid("cervix")} legend="16. A la exploración se observa" options={CERVIX} value={cito.cervix}
               onChange={(v) => setCito((c) => ({ ...c, cervix: v }))} />
             {canSee ? (
-              <ChipGroup id={fid("risk")} legend="16. Factores de riesgo" options={RISK} value={cito.risk}
+              <ChipGroup id={fid("risk")} legend="20. Factores de riesgo" options={RISK} value={cito.risk}
                 onChange={(v) => setCito((c) => ({ ...c, risk: v }))} />
             ) : (
-              <RoleLocked label="16. Factores de riesgo" />
+              <RoleLocked label="20. Factores de riesgo" />
             )}
-            <ChoiceGroup id={fid("repeated")} name="repeated" legend="19. ¿Es muestra repetida?" value={cito.repeated}
+            <ChoiceGroup id={fid("repeated")} name="repeated" legend="22. ¿Es muestra repetida?" value={cito.repeated}
               options={[{ value: "no", label: "No" }, { value: "si", label: "Sí" }]} onChange={(v) => setCito((c) => ({ ...c, repeated: v }))} />
             <div className="grid gap-md sm:grid-cols-2">
-              <VisitField id={fid("license")} label="21. Cédula de quien toma la muestra">
+              <VisitField id={fid("license")} label="18. Cédula de quien toma la muestra">
                 <Input id={fid("license")} autoComplete="off" value={cito.license} onChange={(e) => setCito((c) => ({ ...c, license: e.target.value }))} />
               </VisitField>
-              <VisitField id={fid("cytologyNumber")} label="22. Número citológico">
+              <VisitField id={fid("cytologyNumber")} label="24. Número citológico">
                 <Input id={fid("cytologyNumber")} autoComplete="off" className="type-folio" value={cito.cytologyNumber}
                   onChange={(e) => setCito((c) => ({ ...c, cytologyNumber: e.target.value }))} />
               </VisitField>
@@ -382,7 +382,7 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
 
         {doMama && (
           <VisitGroup title="Revisión mamaria" hint="Reactivos reducidos. Ultrasonido CHISON 5, transductor de 10 MHz.">
-            <VisitField id={fid("consultReason")} label="1. Motivo de la consulta">
+            <VisitField id={fid("consultReason")} label="10. Motivo de la consulta">
               <Input id={fid("consultReason")} autoComplete="off" value={mama.consultReason} onChange={(e) => setMama((m) => ({ ...m, consultReason: e.target.value }))} />
             </VisitField>
             <AutofillBox status={status.previousMammogram} source={auto.previousMammogram?.source} onConfirm={() => confirm("previousMammogram")}>
@@ -407,14 +407,14 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
                 </AutofillBox>
               </div>
             )}
-            <VisitField id={fid("clinicalExam")} label="17. Exploración clínica">
+            <VisitField id={fid("clinicalExam")} label="18. Resultados de la exploración clínica">
               <Input id={fid("clinicalExam")} autoComplete="off" placeholder="Ej. Sin hallazgos a la exploración" value={mama.clinicalExam}
                 onChange={(e) => setMama((m) => ({ ...m, clinicalExam: e.target.value }))} />
             </VisitField>
-            <ChoiceGroup id={fid("thermography")} name="thermography" legend="22. Termografía" value={mama.thermography}
+            <ChoiceGroup id={fid("thermography")} name="thermography" legend="19. Termografía" value={mama.thermography}
               options={[{ value: "simetrico", label: "Simétrica" }, { value: "asimetrico", label: "Asimétrica" }]}
               onChange={(v) => setMama((m) => ({ ...m, thermography: v }))} />
-            <VisitField id={fid("ultrasoundNotes")} label="23. Notas del ultrasonido">
+            <VisitField id={fid("ultrasoundNotes")} label="20. Resultados del ultrasonido">
               <Input id={fid("ultrasoundNotes")} autoComplete="off" value={mama.ultrasoundNotes} onChange={(e) => setMama((m) => ({ ...m, ultrasoundNotes: e.target.value }))} />
             </VisitField>
           </VisitGroup>
