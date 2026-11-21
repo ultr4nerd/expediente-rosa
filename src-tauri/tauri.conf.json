@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "expediente-rosa",
-        "width": 800,
-        "height": 600
+        "title": "Expediente Rosa",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 700
       }
     ],
     "security": {
