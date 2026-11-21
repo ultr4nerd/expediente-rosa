@@ -3,8 +3,8 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Valkey } from "iovalkey";
 import { createApp, folioYear, KEYS } from "../src/app.ts";
 
-// DB 15 keeps tests away from demo data in DB 0.
-const valkey = new Valkey(process.env.VALKEY_TEST_URL ?? "redis://localhost:6379/15");
+// DB 15 keeps tests away from demo data in DB 0. Same least-privilege user as the app.
+const valkey = new Valkey(process.env.VALKEY_TEST_URL ?? "redis://er-central:er-demo-pass@localhost:6379/15");
 const app = createApp(valkey);
 
 interface Ev {

@@ -1,0 +1,2 @@
+user er-central on >er-demo-pass ~{er}:* resetchannels -@all +ping +select +info +client|setname +client|setinfo +get +set +exists +incr +hget +hset +hexists +hlen +xadd +xrange +xrevrange +xlen +eval +evalsha +script|load +script|exists +keys +scan +dbsize +flushdb
+user default on >er-admin-demo-pass ~* +@all
