@@ -1,10 +1,11 @@
 // Minimal state-based navigation (no router): each screen lives in its own file under src/screens/.
 import { createContext, useContext, useState, type ReactNode } from "react";
+import type { RegistrationPrefill } from "@/domain/searchQuery";
 
 export type Route =
   | { name: "login" }
   | { name: "search" }
-  | { name: "patient-new" }
+  | { name: "patient-new"; prefill?: RegistrationPrefill }
   | { name: "patient"; patientId: string }
   | { name: "visit-new"; patientId: string }
   | { name: "sync" }

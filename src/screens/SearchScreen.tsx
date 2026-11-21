@@ -9,7 +9,8 @@ import { useRecords } from "@/app/useRecords";
 import { useNavigation } from "@/app/navigation";
 import { useSession } from "@/app/session";
 import { newEvent } from "@/domain/factory";
-import { looksLikeFolio, matchPatients, searchByFolio, type MatchCandidate, type MatchQuery } from "@/domain/matching";
+import { looksLikeFolio, matchPatients, searchByFolio, type MatchCandidate } from "@/domain/matching";
+import { parseSearchText, prefillFromSearch } from "@/domain/searchQuery";
 import { isTauri } from "@/platform";
 import { deviceInfo } from "@/platform/tauri";
 import estadoVacio from "@/assets/illustrations/estado-vacio.webp";
@@ -19,17 +20,7 @@ function search(text: string, candidates: readonly MatchCandidate[]) {
   const t = text.trim();
   if (t.length < 2) return [];
   if (looksLikeFolio(t)) return searchByFolio(t, candidates);
-  const query: MatchQuery = {};
-  let rest = t;
-  const date = /(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/.exec(rest);
-  if (date) {
-    query.birthDate = `${date[3]}-${date[2].padStart(2, "0")}-${date[1].padStart(2, "0")}`;
-    rest = rest.replace(date[0], " ");
-  }
-  const digits = rest.replace(/\D/g, "");
-  if (digits.length >= 4) query.phone = digits;
-  const name = rest.replace(/[\d()+-]/g, " ").trim();
-  if (name.length >= 2) query.fullName = name;
+  const query = parseSearchText(t);
   if (!query.fullName && !query.phone && !query.birthDate) return [];
   return matchPatients(query, candidates, { limit: 8 });
 }
@@ -131,7 +122,8 @@ export function SearchScreen() {
 
   const q = query.trim();
   const visible = results.filter((r) => !dismissed.has(r.patient.patientId));
-  const newPatient = () => go({ name: "patient-new" });
+  // Registration always starts from the search: carry what was typed (name, date, phone).
+  const newPatient = () => go({ name: "patient-new", prefill: prefillFromSearch(query, looksLikeFolio) });
 
   return (
     <section className="mx-auto flex w-full max-w-3xl flex-col gap-lg">
@@ -189,8 +181,8 @@ export function SearchScreen() {
         />
       ) : results.length === 0 ? (
         <EmptyState
-          title={`No encontramos a nadie con «${q}»`}
-          body="Revisa la ortografía o prueba con el teléfono o el folio. Si es su primera vez, regístrala."
+          title="No encontramos a esta paciente."
+          body="Regístrala con los datos que ya escribiste."
           action={<Button size="lg" onClick={newPatient}><UserPlus aria-hidden="true" />Registrar nueva paciente</Button>}
         />
       ) : (
@@ -210,9 +202,9 @@ export function SearchScreen() {
             ))}
           </ul>
           <div className="flex flex-wrap items-center justify-between gap-md rounded-xl border border-dashed p-lg">
-            <p>{visible.length === 0 ? "Ninguna es ella." : "¿Ninguna es ella?"} Regístrala como paciente nueva.</p>
+            <p>Revisa las coincidencias primero. Si ninguna es ella, regístrala con los datos que ya escribiste.</p>
             <Button variant={visible.length === 0 ? "default" : "outline"} size={visible.length === 0 ? "lg" : "default"} onClick={newPatient}>
-              <UserPlus aria-hidden="true" />Registrar nueva paciente
+              <UserPlus aria-hidden="true" />Ninguna es ella: registrar nueva paciente
             </Button>
           </div>
         </>

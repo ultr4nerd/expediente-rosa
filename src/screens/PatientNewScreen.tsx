@@ -24,6 +24,7 @@ import {
   type IdentityDraft,
   type IdentityField,
 } from "@/domain/identity";
+import type { RegistrationPrefill } from "@/domain/searchQuery";
 import { isTauri, platform } from "@/platform";
 import { ContingencyIntake, emptyPaperIntake, paperIntakeError } from "@/components/ContingencyIntake";
 import { normalizePaperFolio, paperIntakeEvent } from "@/domain/contingency";
@@ -73,11 +74,20 @@ async function computeFolio(device: string) {
   return nextProvisionalFolio(events, device);
 }
 
-export function PatientNewScreen() {
+export function PatientNewScreen({ prefill }: { prefill?: RegistrationPrefill } = {}) {
   const { user, jornadaId } = useSession();
   const { go } = useNavigation();
-  const [draft, setDraft] = useState<IdentityDraft>(emptyDraft);
-  const [birthText, setBirthText] = useState("");
+  // Fields typed in the search arrive prefilled (still editable).
+  const [draft, setDraft] = useState<IdentityDraft>(() => ({
+    ...emptyDraft(),
+    ...(prefill?.fullName ? { fullName: prefill.fullName } : {}),
+    ...(prefill?.birthDate ? { birthDate: prefill.birthDate } : {}),
+    ...(prefill?.phone ? { phone: prefill.phone } : {}),
+  }));
+  const [birthText, setBirthText] = useState(() => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(prefill?.birthDate ?? "");
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : "";
+  });
   const [privacy, setPrivacy] = useState(false);
   const [paper, setPaper] = useState(emptyPaperIntake);
   const [submitted, setSubmitted] = useState(false);

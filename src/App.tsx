@@ -13,7 +13,7 @@ import { FollowUpScreen } from "@/screens/FollowUpScreen";
 function screenFor(route: Route) {
   switch (route.name) {
     case "search": return <SearchScreen />;
-    case "patient-new": return <PatientNewScreen />;
+    case "patient-new": return <PatientNewScreen key={JSON.stringify(route.prefill ?? {})} prefill={route.prefill} />;
     case "patient": return <PatientScreen patientId={route.patientId} />;
     case "visit-new": return <VisitNewScreen patientId={route.patientId} />;
     case "sync": return <SyncScreen />;
