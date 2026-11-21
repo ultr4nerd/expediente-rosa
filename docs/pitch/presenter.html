@@ -70,11 +70,11 @@ const STEPS = [
   { t:[55,65], who:"Tú", title:"Sin señal",
     do:"Señala “Sin conexión” arriba.",
     say:"Todo esto pasó sin señal. Y otra brigada, en otra laptop, registró a la misma mujer sin saberlo." },
-  { t:[65,85], who:"Tú + Miguel", title:"Vuelve la señal", slide:9,
+  { t:[65,85], who:"Tú + Miguel", title:"Vuelve la señal", slide:8,
     do:"Tú: en la terminal escondida, start server. Ambos: “Enviar y recibir”. Miguel: Posibles duplicados → “Vincular (misma persona)”.",
     say:"Vuelve la señal. Las dos brigadas quedan con la misma historia de Rosa: un folio oficial, un solo expediente, y una persona lo confirma." },
-  { t:[85,105], who:"Tú", title:"El médico (privacidad)", slide:8,
-    do:"NO cambies de usuario: deja la diapositiva 8 de fondo y solo dilo.",
+  { t:[85,105], who:"Tú", title:"El médico (privacidad)", slide:9,
+    do:"NO cambies de usuario: deja la diapositiva 9 de fondo y solo dilo.",
     say:"El médico sí ve lo íntimo, y queda registro de quién lo consultó. Nada sale por WhatsApp ni por enlaces abiertos. Y Hilo le da a EIRA la lista de quién debe volver, y a ella su cartilla con QR." },
   { t:[105,120], who:"Tú", title:"Cierre", slide:12,
     do:"Diapositiva 12 (real, simulado, no probado) en pantalla.",
@@ -138,6 +138,15 @@ document.addEventListener("keydown", (e) => {
 });
 setInterval(tick, 250);
 render();
+if (remote) {
+  const sync = async () => {
+    try {
+      const st = await (await fetch("/api/state", { cache: "no-store" })).json();
+      if (st.slide && st.slide !== slide) { slide = st.slide; const el = document.getElementById("slideNo"); if (el) el.textContent = slide; }
+    } catch (e) {}
+  };
+  sync(); setInterval(sync, 1000);
+}
 </script>
 </body>
 </html>
