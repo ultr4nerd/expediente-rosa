@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { PatientContact, authorName, formatDateTime } from "@/components/PatientContact";
 import { RoleClinicalPanel } from "@/components/RoleClinicalPanel";
+import { ConflictBadge } from "@/components/ConflictBadge";
 import { VisitNewButton } from "@/components/VisitNewButton";
 import { useNavigation } from "@/app/navigation";
 import { useRecords } from "@/app/useRecords";
