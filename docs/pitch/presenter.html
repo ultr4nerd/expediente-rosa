@@ -121,7 +121,11 @@ function toggle() {
   else { startAt = performance.now(); running = true; $("start").textContent = "⏸ Pausa"; }
 }
 function reset() { running = false; elapsed = 0; i = 0; $("start").textContent = "▶ Iniciar"; render(); }
-function go(d) { i = Math.min(STEPS.length - 1, Math.max(0, i + d)); render(true); }
+function go(d) {
+  // At the edges there is no step to move to: move one slide instead (e.g. back to the cover).
+  if ((d < 0 && i === 0) || (d > 0 && i === STEPS.length - 1)) { setSlide(slide + d); return; }
+  i = i + d; render(true);
+}
 
 $("start").onclick = toggle;
 $("slPrev").onclick = () => setSlide(slide - 1);
