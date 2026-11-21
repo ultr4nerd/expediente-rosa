@@ -66,7 +66,7 @@ const STEPS = [
     say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona. Siempre se busca antes de registrar." },
   { t:[35,55], who:"Miguel", title:"No volver a preguntar", slide:7,
     do:"Se ve el candado “Oculto para tu rol” → “Nueva visita”: 15 datos del historial, “Subsecuente” → Guardar.",
-    say:"Lo más íntimo de María no lo ve la capturista. Y Hilo ya trae 15 datos de su historia: solo se anota lo de hoy. Menos tiempo capturando, más tiempo para atenderla." },
+    say:"Lo más íntimo de María no lo ve la capturista. Y Hilo ya trae 15 datos de su historia: solo se anota lo de hoy." },
   { t:[55,65], who:"Tú", title:"Sin señal",
     do:"Señala “Sin conexión” arriba.",
     say:"Todo esto pasó sin señal. Y otra brigada, en otra laptop, registró a la misma mujer sin saberlo." },
@@ -74,11 +74,11 @@ const STEPS = [
     do:"Tú: en la terminal escondida, start server. Ambos: “Enviar y recibir”. Miguel: Posibles duplicados → “Vincular (misma persona)”.",
     say:"Vuelve la señal. Las dos brigadas quedan con la misma historia de Rosa: un folio oficial, un solo expediente, y una persona lo confirma." },
   { t:[85,105], who:"Tú", title:"El médico (privacidad)", slide:8,
-    do:"Sales y entras como Ana (2222) → María → “Mostrar” en antecedentes. Si falta tiempo, no lo muestres: solo dilo.",
-    say:"Lo más íntimo de María solo lo ve quien la atiende, y queda registro de cada consulta. Además, Hilo le dice a EIRA quién debe volver y cuándo." },
+    do:"NO cambies de usuario: deja la diapositiva 8 de fondo y solo dilo.",
+    say:"El médico sí ve lo íntimo, y queda registro de quién lo consultó. Nada sale por WhatsApp ni por enlaces abiertos. Y Hilo le da a EIRA la lista de quién debe volver, y a ella su cartilla con QR." },
   { t:[105,120], who:"Tú", title:"Cierre", slide:12,
     do:"Diapositiva 12 (real, simulado, no probado) en pantalla.",
-    say:"Es un prototipo con datos ficticios; lo siguiente es probarlo con EIRA, en sus laptops, en una jornada real. Hilo no diagnostica: cuida que la historia de cada mujer no se pierda y que EIRA sepa quién debe volver. Una mujer, una historia." },
+    say:"Para otra campaña o municipio: la misma app y la misma central; los formularios de otros estudios serían el siguiente paso. Cero licencias, las laptops que EIRA ya tiene y un servidor de 10 a 30 dólares al mes. Es un prototipo con datos ficticios: el inicio de sesión es de demo y falta probarlo en Windows, en una jornada real. Una mujer, una historia." },
 ];
 const TOTAL = 120;
 let i = 0, running = false, startAt = 0, elapsed = 0, deck = null;
