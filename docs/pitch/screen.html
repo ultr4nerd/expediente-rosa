@@ -10,10 +10,11 @@
 <script>
 // Follows the slide chosen on the phone (presenter.html) through /api/state.
 const deck = document.getElementById("deck");
-let current = 1;
+let current = 1, localAt = 0;
 async function poll() {
   try {
     const s = await (await fetch("/api/state", { cache: "no-store" })).json();
+    if (Date.now() - localAt < 1500) return;
     if (s.slide && s.slide !== current) {
       current = s.slide;
       deck.contentWindow.location.hash = "#" + current;
@@ -26,7 +27,7 @@ setInterval(() => {
   try {
     const n = parseInt(deck.contentWindow.location.hash.slice(1), 10);
     if (n && n !== current) {
-      current = n;
+      current = n; localAt = Date.now();
       fetch("/api/state", { method: "POST", body: JSON.stringify({ slide: n }) }).catch(() => {});
     }
   } catch (e) {}
