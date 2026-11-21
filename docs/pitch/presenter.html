@@ -7,150 +7,129 @@
 <style>
   :root{--bg:#1f1a19;--card:#2b2422;--fg:#fcf8f6;--muted:#bcaea8;--rosa:#e07aa0;--ok:#5fbf86;--warn:#f0b54a;--bad:#ef6b5e}
   *{box-sizing:border-box;margin:0}
-  body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;gap:16px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  h1{font-size:22px;color:var(--rosa)}
-  .timer{font-variant-numeric:tabular-nums;font-size:clamp(56px,12vw,120px);font-weight:800;line-height:1;color:var(--ok)}
+  body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding:16px;display:flex;flex-direction:column;gap:14px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .timer{font-variant-numeric:tabular-nums;font-size:64px;font-weight:800;line-height:1;color:var(--ok)}
   .timer.warn{color:var(--warn)} .timer.bad{color:var(--bad)}
-  .bar{height:10px;background:#3a3230;border-radius:99px;overflow:hidden}
+  .bar{height:8px;background:#3a3230;border-radius:99px;overflow:hidden}
   .bar>div{height:100%;background:var(--rosa);width:0}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
-  button{background:var(--card);color:var(--fg);border:1px solid #4a403d;border-radius:12px;padding:12px 16px;font-size:16px;cursor:pointer}
-  button.primary{background:var(--rosa);color:#1f1a19;border-color:var(--rosa);font-weight:700}
-  .step{background:var(--card);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px}
-  .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:15px}
-  .who{background:var(--rosa);color:#1f1a19;border-radius:99px;padding:2px 12px;font-weight:700}
-  .title{font-size:clamp(24px,4vw,34px);font-weight:800}
-  .do{font-size:clamp(18px,2.6vw,22px);line-height:1.4}
-  .say{font-size:clamp(20px,3vw,26px);line-height:1.4;color:#ffd9e6;font-style:italic;border-left:4px solid var(--rosa);padding-left:12px}
-  .next{color:var(--muted);font-size:17px}
+  button{background:var(--card);color:var(--fg);border:1px solid #4a403d;border-radius:14px;padding:14px 16px;font-size:17px;cursor:pointer}
+  button.primary{background:var(--rosa);color:#1f1a19;border-color:var(--rosa);font-weight:800}
+  .note{background:var(--card);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:15px}
+  .who{background:var(--rosa);color:#1f1a19;border-radius:99px;padding:2px 12px;font-weight:800}
+  .slide{border:1px solid #4a403d;border-radius:99px;padding:2px 10px}
+  .title{font-size:28px;font-weight:800}
+  .do{font-size:18px;line-height:1.4;background:#3a3230;border-radius:12px;padding:10px 12px}
+  .do b{color:var(--warn)}
+  .say{font-size:23px;line-height:1.4;color:#ffd9e6;border-left:4px solid var(--rosa);padding-left:12px}
+  .nav{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+  .nav button{font-size:22px;padding:20px}
+  .next{color:var(--muted);font-size:15px}
   .next b{color:var(--fg)}
-  .help{color:var(--muted);font-size:13px}
-  .late{color:var(--bad);font-weight:700}
 </style>
 </head>
 <body>
-<header>
-  <h1>Hilo · Notas de presentador</h1>
-  <div class="controls">
-    <button id="openDeck">Abrir presentación</button>
+<div class="top">
+  <div class="timer" id="timer">0:00</div>
+  <div style="display:flex;gap:8px">
     <button id="start" class="primary">▶ Iniciar</button>
-    <button id="reset">↺ Reiniciar</button>
+    <button id="reset">↺</button>
   </div>
-</header>
-
-<div class="timer" id="timer">0:00</div>
+</div>
 <div class="bar"><div id="progress"></div></div>
 
-<section class="step" id="step"></section>
+<section class="note" id="note"></section>
 <div class="next" id="next"></div>
 
-<div class="controls">
-  <button id="prev">← Anterior</button>
-  <button id="nextBtn" class="primary">Siguiente →</button>
+<div class="nav">
+  <button id="prev">◀</button>
+  <button id="nextBtn" class="primary">Siguiente ▶</button>
 </div>
-<div class="controls">
-  <button id="slPrev">◀ Diapositiva</button>
-  <button disabled>Diapositiva <b id="slideNo">1</b> / 13</button>
-  <button id="slNext">Diapositiva ▶</button>
-</div>
-<p class="help">Teclado: espacio = iniciar o pausar · ← → = paso · R = reiniciar. En la Mac abre /screen.html: sigue las diapositivas que elijas aquí. Los pasos 1, 2 y 7 cambian la diapositiva solos.</p>
 
 <script>
-const STEPS = [
-  { t:[0,15], who:"Tú", title:"El problema", slide:2,
-    do:"Diapositiva 2 (el problema) en pantalla.",
-    say:"María viajó horas para su Papanicolaou. Si regresa y nadie encuentra su historia, empieza de cero. EIRA atiende hasta 150 mujeres así, sin señal, con papel y Excel. Nos dijeron: después de 100 expedientes ya no sé si estoy capturando bien." },
-  { t:[15,35], who:"Miguel", title:"Reconocerla sin adivinar", slide:6,
-    do:"Miguel (Laura) busca “Maria Ejenplo” → dos Marías con el porqué → “Es la misma persona”.",
-    say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona. Siempre se busca antes de registrar." },
-  { t:[35,55], who:"Miguel", title:"No volver a preguntar", slide:7,
-    do:"Se ve el candado “Oculto para tu rol” → “Nueva visita”: 15 datos del historial, “Subsecuente” → Guardar.",
-    say:"Lo más íntimo de María no lo ve la capturista. Y Hilo ya trae 15 datos de su historia: solo se anota lo de hoy." },
-  { t:[55,65], who:"Tú", title:"Sin señal",
-    do:"Señala “Sin conexión” arriba.",
-    say:"Todo esto pasó sin señal. Y otra brigada, en otra laptop, registró a la misma mujer sin saberlo." },
-  { t:[65,85], who:"Tú + Miguel", title:"Vuelve la señal", slide:8,
-    do:"Tú: en la terminal escondida, start server. Ambos: “Enviar y recibir”. Miguel: Posibles duplicados → “Vincular (misma persona)”.",
-    say:"Vuelve la señal. Las dos brigadas quedan con la misma historia de Rosa: un folio oficial, un solo expediente, y una persona lo confirma." },
-  { t:[85,105], who:"Tú", title:"El médico (privacidad)", slide:9,
-    do:"NO cambies de usuario: deja la diapositiva 9 de fondo y solo dilo.",
-    say:"El médico sí ve lo íntimo, y queda registro de quién lo consultó. Nada sale por WhatsApp ni por enlaces abiertos. Y Hilo le da a EIRA la lista de quién debe volver, y a ella su cartilla con QR." },
-  { t:[105,120], who:"Tú", title:"Cierre", slide:12,
-    do:"Diapositiva 12 (real, simulado, no probado) en pantalla.",
-    say:"Para otra campaña o municipio: la misma app y la misma central; los formularios de otros estudios serían el siguiente paso. Cero licencias, las laptops que EIRA ya tiene y un servidor de 10 a 30 dólares al mes. Es un prototipo con datos ficticios: el inicio de sesión es de demo y falta probarlo en Windows, en una jornada real. Una mujer, una historia." },
-];
+// One tap = one slide = one note. The phone walks this sequence; the Mac (screen.html) shows the same slide.
+const NOTES = {
+  1:  { who:"Los dos", title:"Portada", time:"antes de empezar",
+        do:"Esperen a que les den la palabra. Toca <b>▶ Iniciar</b> y luego <b>Siguiente</b>.",
+        say:"Somos Hilo, para EIRA Movimiento Rosa." },
+  2:  { who:"Tú", title:"El problema", time:"0:00–0:15",
+        do:"Solo habla; la diapositiva acompaña.",
+        say:"María viajó horas para su Papanicolaou. Si regresa y nadie encuentra su historia, empieza de cero. EIRA atiende hasta 150 mujeres así, sin señal, con papel y Excel." },
+  6:  { who:"Miguel en la app", title:"Buscar a María", time:"0:15–0:35",
+        do:"<b>Cmd+Tab a Hilo.</b> Miguel (Laura) escribe “Maria Ejenplo” → salen dos Marías con el porqué → <b>Es la misma persona</b>.",
+        say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona." },
+  7:  { who:"Miguel en la app", title:"Su historia llega sola", time:"0:35–0:55",
+        do:"Se ve el candado “Oculto para tu rol” → <b>Nueva visita</b>: “15 datos del historial”, “Subsecuente” → Guardar.",
+        say:"Lo más íntimo de María no lo ve la capturista. Y Hilo ya trae 15 datos de su historia: solo se anota lo de hoy." },
+  8:  { who:"Tú + Miguel", title:"Sin señal… y vuelve", time:"0:55–1:25",
+        do:"Señala “Sin conexión”. Luego <b>terminal escondida: start server</b>. Los dos: <b>Enviar y recibir</b>. Miguel: <b>Posibles duplicados → Vincular</b>.",
+        say:"Todo esto pasó sin señal, y otra brigada registró a la misma mujer. Vuelve la señal: las dos brigadas quedan con la misma historia, un folio oficial, un solo expediente, y una persona lo confirma." },
+  9:  { who:"Tú", title:"Privacidad", time:"1:25–1:40",
+        do:"<b>Cmd+Tab a la presentación.</b> No cambies de usuario: solo dilo.",
+        say:"El médico sí ve lo íntimo, y queda registro de quién lo consultó. Nada sale por WhatsApp ni por enlaces abiertos. Y Hilo le da a EIRA la lista de quién debe volver, y a ella su cartilla con QR." },
+  12: { who:"Tú", title:"Cierre", time:"1:40–2:00",
+        do:"Habla mirando al jurado.",
+        say:"Para otra campaña o municipio: la misma app y la misma central. Cero licencias, las laptops que EIRA ya tiene y un servidor de 10 a 30 dólares al mes. Es un prototipo con datos ficticios; lo siguiente es probarlo con EIRA en una jornada real. Hilo. Una mujer, una historia." },
+  13: { who:"Preguntas", title:"Piloto y costos", time:"preguntas",
+        do:"Úsala si preguntan por costos, riesgos u operación.",
+        say:"¿Datos? Cifrados en la laptop, permisos por rol, bitácora, sin enlaces. ¿Otra campaña? Misma app; nuevos formularios, siguiente paso. ¿Windows? Compila en CI; falta probarlo en sus laptops." },
+};
+const SEQ = [1, 2, 6, 7, 8, 9, 12, 13];
 const TOTAL = 120;
-let i = 0, running = false, startAt = 0, elapsed = 0, deck = null;
-
-const $ = (id) => document.getElementById(id);
-const fmt = (s) => { const n = Math.max(0, Math.floor(s)); return Math.floor(n/60) + ":" + String(n%60).padStart(2,"0"); };
-
-function render(fromUser) {
-  const s = STEPS[i];
-  $("step").innerHTML =
-    `<div class="meta"><span class="who">${s.who}</span><span>Paso ${i+1} de ${STEPS.length}</span><span>${fmt(s.t[0])}–${fmt(s.t[1])}</span><span id="late"></span></div>
-     <div class="title">${s.title}</div>
-     <div class="do">${s.do}</div>
-     <div class="say">“${s.say.replace(/^“|”$/g,"")}”</div>`;
-  const n = STEPS[i+1];
-  $("next").innerHTML = n ? `Siguiente: <b>${n.title}</b> · ${n.who}` : "Último paso";
-  if (s.slide && fromUser) setSlide(s.slide);
-  tick();
-}
-let slide = 1;
+let pos = 0, running = false, startAt = 0, elapsed = 0;
 const remote = location.protocol.startsWith("http");
-function setSlide(n) {
-  slide = Math.min(13, Math.max(1, n));
-  if (deck && !deck.closed) { try { deck.location.hash = "#" + slide; } catch (e) {} }
-  if (remote) fetch("/api/state", { method: "POST", body: JSON.stringify({ slide, step: i + 1 }) }).catch(() => {});
-  const el = document.getElementById("slideNo"); if (el) el.textContent = slide;
+const $ = (id) => document.getElementById(id);
+const fmt = (s) => { const n = Math.max(0, Math.floor(s)); return Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0"); };
+
+function render() {
+  const slide = SEQ[pos];
+  const n = NOTES[slide];
+  $("note").innerHTML =
+    `<div class="meta"><span class="who">${n.who}</span><span class="slide">Diapositiva ${slide}</span><span>${n.time}</span></div>
+     <div class="title">${n.title}</div>
+     <div class="do">${n.do}</div>
+     <div class="say">${n.say}</div>`;
+  const nx = SEQ[pos + 1];
+  $("next").innerHTML = nx ? `Después: <b>${NOTES[nx].title}</b> · ${NOTES[nx].who}` : "Fin";
+}
+function show(p, send) {
+  pos = Math.min(SEQ.length - 1, Math.max(0, p));
+  render();
+  if (send && remote) fetch("/api/state", { method: "POST", body: JSON.stringify({ slide: SEQ[pos] }) }).catch(() => {});
 }
 function now() { return running ? elapsed + (performance.now() - startAt) / 1000 : elapsed; }
 function tick() {
   const e = now();
-  const el = $("timer");
-  el.textContent = fmt(e);
-  el.className = "timer" + (e >= TOTAL ? " bad" : e >= 100 ? " warn" : "");
-  $("progress").style.width = Math.min(100, e / TOTAL * 100) + "%";
-  const late = $("late");
-  if (late) late.innerHTML = running && e > STEPS[i].t[1] + 3 ? `<span class="late">vas tarde</span>` : "";
+  $("timer").textContent = fmt(e);
+  $("timer").className = "timer" + (e >= TOTAL ? " bad" : e >= 100 ? " warn" : "");
+  $("progress").style.width = Math.min(100, (e / TOTAL) * 100) + "%";
 }
 function toggle() {
-  if (running) { elapsed = now(); running = false; $("start").textContent = "▶ Continuar"; }
+  if (running) { elapsed = now(); running = false; $("start").textContent = "▶ Seguir"; }
   else { startAt = performance.now(); running = true; $("start").textContent = "⏸ Pausa"; }
 }
-function reset() { running = false; elapsed = 0; i = 0; $("start").textContent = "▶ Iniciar"; render(); }
-function go(d) {
-  // At the edges there is no step to move to: move one slide instead (e.g. back to the cover).
-  if ((d < 0 && i === 0) || (d > 0 && i === STEPS.length - 1)) { setSlide(slide + d); return; }
-  i = i + d; render(true);
-}
-
 $("start").onclick = toggle;
-$("slPrev").onclick = () => setSlide(slide - 1);
-$("slNext").onclick = () => setSlide(slide + 1);
-$("openDeck").onclick = () => { deck = window.open(remote ? "screen.html" : "index.html#1", "hilo-deck"); };
-$("reset").onclick = reset;
-$("prev").onclick = () => go(-1);
-$("nextBtn").onclick = () => go(1);
+$("reset").onclick = () => { running = false; elapsed = 0; $("start").textContent = "▶ Iniciar"; tick(); };
+$("prev").onclick = () => show(pos - 1, true);
+$("nextBtn").onclick = () => show(pos + 1, true);
 document.addEventListener("keydown", (e) => {
   if (e.key === " ") { e.preventDefault(); toggle(); }
-  else if (e.key === "ArrowRight") go(1);
-  else if (e.key === "ArrowLeft") go(-1);
-  else if (e.key.toLowerCase() === "r") reset();
+  else if (e.key === "ArrowRight") show(pos + 1, true);
+  else if (e.key === "ArrowLeft") show(pos - 1, true);
 });
 setInterval(tick, 250);
-render();
-if (remote) {
-  const sync = async () => {
-    try {
-      const st = await (await fetch("/api/state", { cache: "no-store" })).json();
-      if (st.slide && st.slide !== slide) { slide = st.slide; const el = document.getElementById("slideNo"); if (el) el.textContent = slide; }
-    } catch (e) {}
-  };
-  sync(); setInterval(sync, 1000);
+
+// Follow the Mac: if it shows a slide of the sequence, show its note (never moves the Mac on load).
+async function follow() {
+  try {
+    const st = await (await fetch("/api/state", { cache: "no-store" })).json();
+    const p = SEQ.indexOf(st.slide);
+    if (p >= 0 && p !== pos) { pos = p; render(); }
+  } catch (e) {}
 }
+render(); tick();
+if (remote) { follow(); setInterval(follow, 1000); }
 </script>
 </body>
 </html>
