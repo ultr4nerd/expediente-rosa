@@ -123,6 +123,7 @@ function PatientHeader({ record }: { record: PatientRecord }) {
             </span>
           </div>
         </div>
+        <ConflictBadge patientId={record.patientId} />
         <VisitNewButton patientId={record.patientId} />
       </div>
     </header>
