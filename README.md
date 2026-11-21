@@ -55,7 +55,7 @@ EIRA lleva prevención de cáncer de mama y cervicouterino a comunidades de Jali
 | Respaldo y restauración (JSON), exportación de estadísticas sin datos personales (CSV) y hoja de contingencia imprimible | | |
 | **Lista de seguimiento**: pacientes que requieren volver (por ejemplo, BI-RADS 3 a seis meses), sin mostrar hallazgos a la capturista | | |
 | **Bitácora de accesos**: cada vez que el personal médico revela un dato sensible queda registrado; solo administración ve la lista | | |
-| **Cartilla imprimible** con folio y un código QR que solo contiene el folio | | |
+| **Cartilla imprimible** con folio y un código QR que solo contiene el folio; se lee con la **cámara de la computadora** ("Escanear cartilla") o con un lector USB | | |
 | **Hub entre laptops**: una laptop sirve a la otra por la red local, sin internet (probado con dos instancias en la misma Mac; falta probarlo con dos laptops por Wi-Fi) | | |
 
 ## Cómo probarlo
