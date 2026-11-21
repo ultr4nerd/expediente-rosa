@@ -3,7 +3,15 @@
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Printer, X } from "lucide-react";
+import { invoke } from "@tauri-apps/api/core";
 import { Button } from "@/components/ui/button";
+import { isTauri } from "@/platform";
+
+// window.print() does nothing in the macOS WebView (Tauri): use the native print command there.
+function printPage() {
+  if (isTauri) void invoke("print_page").catch(() => window.print());
+  else window.print();
+}
 
 export function PrintOverlay({
   title, hint, controls, printLabel, onPrint, onClose, children,
@@ -36,7 +44,7 @@ export function PrintOverlay({
         </div>
         <div className="flex flex-wrap items-end gap-sm">
           {controls}
-          <Button type="button" onClick={() => { onPrint?.(); window.print(); }} autoFocus>
+          <Button type="button" onClick={() => { onPrint?.(); printPage(); }} autoFocus>
             <Printer aria-hidden="true" />
             {printLabel}
           </Button>
