@@ -4,7 +4,7 @@
 
 15 open / 6 done
 
-## todo (15)
+## todo (14)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -13,7 +13,6 @@
 | [ISS-0009](issues/ISS-0009-busqueda-y-confirmacion-humana.md) | P0 | feature | ui |  |  | Search and human confirmation |
 | [ISS-0010](issues/ISS-0010-visita-con-citologia-y-revision-mamaria-autollenado-y-valida.md) | P0 | feature | ui |  |  | Visit with Pap smear and breast exam, autofill and validations |
 | [ISS-0011](issues/ISS-0011-cronologia-del-expediente-y-cambio-de-contacto-con-historial.md) | P0 | feature | ui |  |  | Patient-record timeline and contact change with history |
-| [ISS-0012](issues/ISS-0012-folio-definitivo-y-duplicado-offline-con-vinculacion.md) | P0 | feature | domain |  |  | Final folio and offline duplicate with linking |
 | [ISS-0013](issues/ISS-0013-roles-simulados-y-resultado-del-patologo.md) | P0 | feature | ui |  |  | Simulated roles and pathologist result |
 | [ISS-0014](issues/ISS-0014-readme-de-entrega-y-lamina-real-simulado.md) | P0 | feature | docs |  |  | Submission README and real/simulated slide |
 | [ISS-0015](issues/ISS-0015-build-de-windows-en-ci.md) | P1 | feature | ci |  |  | Windows build in CI |
@@ -23,6 +22,12 @@
 | [ISS-0019](issues/ISS-0019-contador-de-recaptura-evitada.md) | P1 | feature | ui |  |  | Avoided re-entry counter |
 | [ISS-0020](issues/ISS-0020-conflicto-por-campo-con-resolucion-humana.md) | P1 | feature | domain |  |  | Per-field conflict with human resolution |
 | [ISS-0021](issues/ISS-0021-hub-lan-embebido-entre-laptops.md) | P2 | feature | rust |  |  | Embedded LAN hub between laptops |
+
+## in-progress (1)
+
+| id | pri | kind | area | owner | due | title |
+| --- | --- | --- | --- | --- | --- | --- |
+| [ISS-0012](issues/ISS-0012-folio-definitivo-y-duplicado-offline-con-vinculacion.md) | P0 | feature | domain | thread-b |  | Final folio and offline duplicate with linking |
 
 ## done (6)
 
