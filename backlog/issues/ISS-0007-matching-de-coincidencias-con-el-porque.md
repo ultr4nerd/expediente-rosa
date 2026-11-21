@@ -2,7 +2,7 @@
 id: ISS-0007
 title: Match candidates with the reason why
 kind: feature
-status: todo
+status: done
 priority: P0
 area: domain
 parent: ISS-0001
@@ -22,13 +22,16 @@ Spanish-aware normalization (accents, Ma.→María, surname order), Jaro-Winkler
 ## Scope
 
 ## Acceptance criteria
-- [ ] 'Maria Ejenplo' finds María Ejemplo and María Ejemplar with different reasons (test)
-- [ ] never returns an automatic action, only candidates
-- [ ] normalization tests with accents and abbreviations
+- [x] 'Maria Ejenplo' finds María Ejemplo and María Ejemplar with different reasons (test)
+- [x] never returns an automatic action, only candidates
+- [x] normalization tests with accents and abbreviations
 
 ## Notes
 
 ## Log
+- 2026-11-21 12:00 thread-c: started; plan in progress/ISS-0007.md
+- 2026-11-21 12:02 thread-c: verify passed: pnpm verify
+- 2026-11-21 12:02 thread-c: done: Shipped src/domain/matching.ts: Spanish normalization (accents, Ma./Gpe./Lupe expansion, connectors de/del/la dropped...
 
 ## Outcome
-<!-- filled by `backlog done`: what shipped, how it was verified, learnings, follow-ups -->
+Shipped src/domain/matching.ts: Spanish normalization (accents, Ma./Gpe./Lupe expansion, connectors de/del/la dropped), Jaro-Winkler with order-independent token alignment, close-date detection (one digit / swapped day-month), last-4 phone, municipality, CURP-like 16-char key (sex M, state code; labelled as calculated, not official). matchPatients returns ranked {score, Spanish reasons, signals}; never an action; skips aliases, self and pairs marked distinct; very similar names always shown. searchByFolio/searchPatients find by final, provisional or alias folio (a7 -> A-0007). Structural MatchCandidate type so it does not depend on PR #2; PatientRecord satisfies it. 12 Vitest tests incl. 'Maria Ejenplo' finding both Marías with different reasons.
