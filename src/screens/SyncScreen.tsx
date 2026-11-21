@@ -17,6 +17,7 @@ import {
 import { platform } from "@/platform";
 import { ConflictPanel } from "@/components/ConflictPanel";
 import { BackupPanel } from "@/components/BackupPanel";
+import { ContingencyButton } from "@/components/ContingencySheets";
 import { DuplicatesPanel } from "@/components/DuplicatesPanel";
 
 function formatDateTime(iso?: string): string {
@@ -119,6 +120,7 @@ export function SyncScreen() {
       </Card>
       <ConflictPanel />
       <BackupPanel />
+      <div><ContingencyButton /></div>
     </section>
   );
 }

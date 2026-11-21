@@ -98,6 +98,8 @@ export interface PatientRecord {
   /** Every other folio that should find this record (own provisional + folios of linked aliases). */
   folioAliases: string[];
   privacy?: Provenance & { noticeVersion: string; acceptedOn: string };
+  /** Set when the record was typed in later from a printed contingency sheet (ISS-0018). */
+  intake?: { source: "papel"; paperFolio: string; at: string };
   historyConfirmedAt?: string;
   status: PatientStatus;
   /** For an alias: the survivor record it was linked into (resolved to the root). */
@@ -128,6 +130,9 @@ export interface RecordsModel {
   /** Unique events in projection order. */
   events: AnyEvent[];
 }
+
+/** `field.updated` path that marks a record as typed in from a paper contingency sheet. */
+export const PAPER_FOLIO_FIELD = "intake.paperFolio";
 
 const LABELS: Record<EventType, string> = {
   "patient.created": "Alta de paciente",
@@ -221,6 +226,7 @@ function newPatient(patientId: string, at: string): PatientRecord {
 function labelFor(e: AnyEvent, services: Map<string, ServiceRecord>): string {
   switch (e.type) {
     case "field.updated": {
+      if (e.payload.field === PAPER_FOLIO_FIELD) return `Capturada desde hoja de papel ${String(e.payload.value)}`;
       const name = FIELD_LABEL[e.payload.field];
       if (name) return `Cambio de ${name}`;
       return e.payload.field.startsWith("history.") ? "Antecedente actualizado" : LABELS[e.type];
@@ -294,6 +300,9 @@ export function project(input: readonly AnyEvent[]): RecordsModel {
         const conflict = expected === undefined ? prev !== null && prev !== p.created?.eventId : prev !== expected;
         p.fieldHistory.push({ ...prov, field, value, prev, conflict });
         lastFieldEvent.set(key, e.id);
+        if (field === PAPER_FOLIO_FIELD && typeof value === "string" && value) {
+          p.intake = { source: "papel", paperFolio: value, at: e.at };
+        }
         const [root, ...rest] = field.split(".");
         const leaf = rest.join(".");
         if (root === "identity" && leaf) setPath(p.identity as unknown as Record<string, unknown>, leaf, value);
@@ -370,6 +379,7 @@ export function project(input: readonly AnyEvent[]): RecordsModel {
   for (const p of patients.values()) {
     p.folio = p.finalFolio ?? p.provisionalFolio;
     if (p.finalFolio && p.provisionalFolio) p.folioAliases.push(p.provisionalFolio);
+    if (p.intake) p.folioAliases.push(p.intake.paperFolio);
   }
 
   // Distinct marks.

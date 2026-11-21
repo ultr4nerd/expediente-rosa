@@ -315,15 +315,15 @@ export function matchPatients(query: MatchQuery, candidates: readonly MatchCandi
 // ---------------------------------------------------------------------------
 // Folio search
 
-const FOLIO_RE = /^\s*(?:[A-Za-z]\s*-?\s*\d{1,6}|\d{4}\s*-\s*\d{1,6})\s*$/;
+const FOLIO_RE = /^\s*(?:[Pp]?[A-Za-z]\s*-?\s*\d{1,6}|\d{4}\s*-\s*\d{1,6})\s*$/;
 
-/** True when the text looks like a folio ("A-0007", "a7", "2026-0143"). */
+/** True when the text looks like a folio ("A-0007", "a7", "PA-0003", "2026-0143"). */
 export const looksLikeFolio = (text: string) => FOLIO_RE.test(text);
 
 /** Canonical folio: "a7" -> "A-0007", "2026-143" -> "2026-0143". */
 export function normalizeFolio(text: string): string {
   const t = text.replace(/\s/g, "").toUpperCase();
-  const prov = /^([A-Z])-?(\d+)$/.exec(t);
+  const prov = /^(P?[A-Z])-?(\d+)$/.exec(t); // "A-0007" provisional, "PA-0003" paper sheet
   if (prov) return `${prov[1]}-${prov[2].padStart(4, "0")}`;
   const fin = /^(\d{4})-(\d+)$/.exec(t);
   if (fin) return `${fin[1]}-${fin[2].padStart(4, "0")}`;
