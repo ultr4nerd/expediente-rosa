@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import type { AnyEvent } from "@/domain/events";
 import type { EventStore } from "@/domain/ports";
 import { project, type RecordsModel } from "@/domain/projection";
+import { seedIfEmpty } from "@/domain/seed";
 import { platform } from "@/platform";
 
 export interface RecordsState {
@@ -23,7 +24,8 @@ export interface RecordsSource {
   append(events: AnyEvent[]): Promise<number>;
 }
 
-export function createRecordsSource(store: EventStore): RecordsSource {
+export function createRecordsSource(store: EventStore, opts: { seed?: boolean } = {}): RecordsSource {
+  let seeded = !opts.seed;
   let state: RecordsState = { model: project([]), loading: false, version: 0 };
   const listeners = new Set<() => void>();
   let inflight: Promise<RecordsModel> | null = null;
@@ -36,8 +38,10 @@ export function createRecordsSource(store: EventStore): RecordsSource {
   const refresh = (): Promise<RecordsModel> => {
     if (inflight) return inflight;
     set({ loading: true });
-    inflight = store
-      .list(0)
+    // First load on a fresh store: put the fictitious demo patients in (ISS-0004).
+    const ready = seeded ? Promise.resolve() : seedIfEmpty(store).then(() => { seeded = true; });
+    inflight = ready
+      .then(() => store.list(0))
       .then(({ events }) => {
         const model = project(events);
         set({ model, loading: false, error: undefined, version: state.version + 1 });
@@ -70,9 +74,9 @@ export function createRecordsSource(store: EventStore): RecordsSource {
 }
 
 let defaultSource: RecordsSource | null = null;
-/** Shared source over the app's platform store. */
+/** Shared source over the app's platform store; seeds fictitious demo data when the store is empty. */
 export function recordsSource(): RecordsSource {
-  defaultSource ??= createRecordsSource(platform.store);
+  defaultSource ??= createRecordsSource(platform.store, { seed: true });
   return defaultSource;
 }
 
