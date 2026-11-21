@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "skills": {
+    "backlog": {
+      "source": "ultr4nerd/skills",
+      "commit": "96d88382b41efc82e62b92f49c0cce5c6f963ae4",
+      "sourceType": "github",
+      "skillPath": "skills/backlog/SKILL.md",
+      "computedHash": "d888323293dcdc259f121bb40c970ac472061f4c96322d9726624d3beca5a700"
+    },
+    "design": {
+      "source": "ultr4nerd/skills",
+      "commit": "96d88382b41efc82e62b92f49c0cce5c6f963ae4",
+      "sourceType": "github",
+      "skillPath": "skills/design/SKILL.md",
+      "computedHash": "02373678846c9bf5e4b4578890eacd400f25a9df7217a2e0125292530096700d"
+    },
+    "docmap": {
+      "source": "ultr4nerd/skills",
+      "commit": "96d88382b41efc82e62b92f49c0cce5c6f963ae4",
+      "sourceType": "github",
+      "skillPath": "skills/docmap/SKILL.md",
+      "computedHash": "a0cc804d7b6bbdcb8d49ba72cc91424493d9f5e416438b35f69c4bff557d2b82"
+    }
+  }
+}

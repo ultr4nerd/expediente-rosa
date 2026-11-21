@@ -1,0 +1,49 @@
+{
+  "css": {
+    "tailwind": true,
+    "tailwindReset": ["color"]
+  },
+  "scan": {
+    "include": ["src/**/*.{ts,tsx,css}"],
+    "exclude": ["src/components/ui/**"]
+  },
+  "shadcn": {
+    "vars": {
+      "background": "color.surface",
+      "foreground": "color.on-surface",
+      "card": "color.surface-raised",
+      "card-foreground": "color.on-surface",
+      "popover": "color.surface-raised",
+      "popover-foreground": "color.on-surface",
+      "primary": "color.primary",
+      "primary-foreground": "color.on-primary",
+      "secondary": "color.secondary",
+      "secondary-foreground": "color.on-secondary",
+      "muted": "color.surface-sunken",
+      "muted-foreground": "color.on-surface-muted",
+      "accent": "color.highlight",
+      "accent-foreground": "color.on-highlight",
+      "destructive": "color.danger",
+      "destructive-foreground": "color.on-danger",
+      "border": "color.border",
+      "input": "color.input",
+      "ring": "color.focus",
+      "radius": "radius.control",
+      "sidebar": "color.surface-sunken",
+      "sidebar-foreground": "color.on-surface",
+      "sidebar-primary": "color.primary",
+      "sidebar-primary-foreground": "color.on-primary",
+      "sidebar-accent": "color.highlight",
+      "sidebar-accent-foreground": "color.on-highlight",
+      "sidebar-border": "color.border",
+      "sidebar-ring": "color.focus",
+      "chart-1": "color.primary",
+      "chart-2": "color.focus",
+      "chart-3": "color.success",
+      "chart-4": "color.warning",
+      "chart-5": "color.on-surface-muted"
+    },
+    "import": "@/components/ui",
+    "dir": "src/components/ui"
+  }
+}

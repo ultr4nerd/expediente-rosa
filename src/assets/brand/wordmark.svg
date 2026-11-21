@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120" width="640" height="120" role="img" aria-label="Expediente Rosa">
+  <!-- Marca: carpeta con listón. Texto en Montserrat (empaquetada en la app). -->
+  <g transform="translate(4 4) scale(0.109375)">
+    <rect x="32" y="32" width="960" height="960" rx="216" fill="#b7426c"/>
+    <path d="M232 330a56 56 0 0 1 56-56h150l56 60h242a56 56 0 0 1 56 56v346a56 56 0 0 1-56 56H288a56 56 0 0 1-56-56z" fill="#fcf8f6"/>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M582 730 L480 596 C436 538 440 444 512 444 C584 444 588 538 544 596" stroke="#b7426c" stroke-width="60"/>
+      <path d="M470 698 L560 575" stroke="#fcf8f6" stroke-width="96"/>
+      <path d="M443 730 L560 575" stroke="#b7426c" stroke-width="60"/>
+    </g>
+  </g>
+  <text x="132" y="62" font-family="'Montserrat Variable', Montserrat, 'Segoe UI', system-ui, sans-serif" font-size="44" font-weight="700" letter-spacing="-0.5" fill="#2a2220">Expediente <tspan fill="#b7426c">Rosa</tspan></text>
+  <text x="134" y="98" font-family="'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Next', 'Segoe UI', system-ui, sans-serif" font-size="20" fill="#6b5e58">con EIRA Movimiento Rosa</text>
+</svg>
