@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigation } from "@/app/navigation";
 import { useSession } from "@/app/session";
+import { recordsSource } from "@/app/useRecords";
 import type { Affiliation } from "@/domain/events";
 import { newEvent, nextProvisionalFolio, type Actor } from "@/domain/factory";
 import {
@@ -64,7 +65,7 @@ async function loadDevice(): Promise<string> {
   }
 }
 
-// Integration seam: swap for thread C's projection hook (useRecords().append/refresh) when ISS-0003 lands.
+/** Reads the store itself (not the cached model) so the folio is never stale. */
 async function computeFolio(device: string) {
   const { events } = await platform.store.list();
   return nextProvisionalFolio(events, device);
@@ -124,7 +125,8 @@ export function PatientNewScreen() {
       const provisionalFolio = await computeFolio(device);
       const patientId = crypto.randomUUID();
       const now = new Date().toISOString();
-      await platform.store.append([
+      // Through the shared records source so search and the patient screen see her immediately.
+      await recordsSource().append([
         newEvent("patient.created", patientId, { identity: toIdentity(draft), provisionalFolio }, actor, { at: now }),
         newEvent("privacy.accepted", patientId, { noticeVersion: PRIVACY_NOTICE_VERSION, acceptedOn: now.slice(0, 10) }, actor, { at: now }),
       ]);
