@@ -51,7 +51,7 @@
 </div>
 <div class="controls">
   <button id="slPrev">◀ Diapositiva</button>
-  <button disabled>Diapositiva <b id="slideNo">1</b> / 7</button>
+  <button disabled>Diapositiva <b id="slideNo">1</b> / 13</button>
   <button id="slNext">Diapositiva ▶</button>
 </div>
 <p class="help">Teclado: espacio = iniciar o pausar · ← → = paso · R = reiniciar. En la Mac abre /screen.html: sigue las diapositivas que elijas aquí. Los pasos 1, 2 y 7 cambian la diapositiva solos.</p>
@@ -61,23 +61,23 @@ const STEPS = [
   { t:[0,15], who:"Tú", title:"El problema", slide:2,
     do:"Diapositiva 2 (el problema) en pantalla.",
     say:"María viajó horas para su Papanicolaou. Si regresa y nadie encuentra su historia, empieza de cero. EIRA atiende hasta 150 mujeres así, sin señal, con papel y Excel. Nos dijeron: después de 100 expedientes ya no sé si estoy capturando bien." },
-  { t:[15,35], who:"Miguel", title:"Reconocerla sin adivinar", slide:4,
+  { t:[15,35], who:"Miguel", title:"Reconocerla sin adivinar", slide:6,
     do:"Miguel (Laura) busca “Maria Ejenplo” → dos Marías con el porqué → “Es la misma persona”.",
     say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona. Siempre se busca antes de registrar." },
-  { t:[35,55], who:"Miguel", title:"No volver a preguntar",
+  { t:[35,55], who:"Miguel", title:"No volver a preguntar", slide:7,
     do:"Se ve el candado “Oculto para tu rol” → “Nueva visita”: 15 datos del historial, “Subsecuente” → Guardar.",
     say:"Lo más íntimo de María no lo ve la capturista. Y Hilo ya trae 15 datos de su historia: solo se anota lo de hoy. Menos tiempo capturando, más tiempo para atenderla." },
   { t:[55,65], who:"Tú", title:"Sin señal",
     do:"Señala “Sin conexión” arriba.",
     say:"Todo esto pasó sin señal. Y otra brigada, en otra laptop, registró a la misma mujer sin saberlo." },
-  { t:[65,85], who:"Tú + Miguel", title:"Vuelve la señal",
+  { t:[65,85], who:"Tú + Miguel", title:"Vuelve la señal", slide:9,
     do:"Tú: en la terminal escondida, start server. Ambos: “Enviar y recibir”. Miguel: Posibles duplicados → “Vincular (misma persona)”.",
     say:"Vuelve la señal. Las dos brigadas quedan con la misma historia de Rosa: un folio oficial, un solo expediente, y una persona lo confirma." },
-  { t:[85,105], who:"Tú", title:"El médico (privacidad)",
+  { t:[85,105], who:"Tú", title:"El médico (privacidad)", slide:8,
     do:"Sales y entras como Ana (2222) → María → “Mostrar” en antecedentes. Si falta tiempo, no lo muestres: solo dilo.",
     say:"Lo más íntimo de María solo lo ve quien la atiende, y queda registro de cada consulta. Además, Hilo le dice a EIRA quién debe volver y cuándo." },
-  { t:[105,120], who:"Tú", title:"Cierre", slide:6,
-    do:"Diapositiva 6 (real, simulado, no probado) en pantalla.",
+  { t:[105,120], who:"Tú", title:"Cierre", slide:12,
+    do:"Diapositiva 12 (real, simulado, no probado) en pantalla.",
     say:"Es un prototipo con datos ficticios; lo siguiente es probarlo con EIRA, en sus laptops, en una jornada real. Hilo no diagnostica: cuida que la historia de cada mujer no se pierda y que EIRA sepa quién debe volver. Una mujer, una historia." },
 ];
 const TOTAL = 120;
@@ -101,7 +101,7 @@ function render() {
 let slide = 1;
 const remote = location.protocol.startsWith("http");
 function setSlide(n) {
-  slide = Math.min(7, Math.max(1, n));
+  slide = Math.min(13, Math.max(1, n));
   if (deck && !deck.closed) { try { deck.location.hash = "#" + slide; } catch (e) {} }
   if (remote) fetch("/api/state", { method: "POST", body: JSON.stringify({ slide, step: i + 1 }) }).catch(() => {});
   const el = document.getElementById("slideNo"); if (el) el.textContent = slide;
