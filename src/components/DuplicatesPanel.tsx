@@ -3,7 +3,7 @@
 // identities side by side; a human decides (EIRA limit: never merge without confirmation):
 // "Vincular (misma persona)" -> patients.linked, "Son personas distintas" -> patients.marked_distinct.
 // Mount point: <DuplicatesPanel /> (renders nothing when there are no proposals).
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Check, Link2, Users, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,24 +14,7 @@ import { confirmLink, findDuplicateProposals, rejectLink, type LinkProposal } fr
 import { isFinalFolio } from "@/domain/factory";
 import type { PatientRecord } from "@/domain/projection";
 import { cn } from "@/lib/utils";
-import { isTauri } from "@/platform";
-import { deviceInfo } from "@/platform/tauri";
-
-/** Device letter: from Rust in the desktop app, "A" in the browser. */
-function useDevice(): string {
-  const [device, setDevice] = useState("A");
-  useEffect(() => {
-    if (!isTauri) return;
-    let alive = true;
-    deviceInfo()
-      .then((d) => alive && d.device && setDevice(d.device))
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, []);
-  return device;
-}
+import { useDevice } from "@/app/useDevice";
 
 const AFFILIATION_LABEL: Record<string, string> = { ninguno: "Ninguna", otro: "Otra", INSABI: "INSABI / IMSS-Bienestar" };
 
