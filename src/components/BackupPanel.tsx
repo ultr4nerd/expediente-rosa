@@ -1,10 +1,12 @@
 // ISS-0017: JSON backup and restore of the whole event log, on the sync screen.
 import { useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
-import { Download, FolderOpen, Upload } from "lucide-react";
+import { Download, FileSpreadsheet, FolderOpen, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { recordsSource } from "@/app/useRecords";
 import { backupFileName, createBackup, parseBackup } from "@/domain/backup";
+import { countsByMonthSiteService, countsCsv } from "@/domain/csvExport";
+import { project } from "@/domain/projection";
 import { platform } from "@/platform";
 import { currentDevice, saveTextFile } from "@/platform/files";
 
@@ -24,6 +26,22 @@ export function BackupPanel() {
       toast.success(path ? `Respaldo guardado con ${events.length} registros.` : `Respaldo descargado con ${events.length} registros.`);
     } catch {
       toast.error("No se pudo guardar el respaldo. Intenta de nuevo.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function exportCsv() {
+    setBusy(true);
+    try {
+      const device = await currentDevice();
+      const { events } = await platform.store.list(0);
+      const rows = countsByMonthSiteService(project(events));
+      const path = await saveTextFile(backupFileName(device, new Date(), "csv", "conteos"), countsCsv(rows), "text/csv;charset=utf-8");
+      setSavedPath(path ?? null);
+      toast.success(`Conteos exportados: ${rows.length} filas, sin datos personales.`);
+    } catch {
+      toast.error("No se pudieron exportar los conteos. Intenta de nuevo.");
     } finally {
       setBusy(false);
     }
@@ -56,7 +74,7 @@ export function BackupPanel() {
   return (
     <section aria-labelledby="backup-title" className="flex flex-col gap-md rounded-xl border bg-card p-lg shadow-sm">
       <div className="flex flex-col gap-xs">
-        <h2 id="backup-title" className="type-heading">Respaldo</h2>
+        <h2 id="backup-title" className="type-heading">Respaldo y exportación</h2>
         <p className="type-caption text-muted-foreground">
           Guarda todo el expediente de esta laptop en un archivo. Si la laptop falla, restáuralo en otra: no se duplica nada.
         </p>
@@ -70,6 +88,10 @@ export function BackupPanel() {
           <Upload aria-hidden="true" />
           Restaurar respaldo
         </Button>
+        <Button type="button" variant="outline" onClick={exportCsv} disabled={busy}>
+          <FileSpreadsheet aria-hidden="true" />
+          Exportar conteos (CSV)
+        </Button>
         <input ref={fileRef} type="file" accept="application/json,.json" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={restore} />
       </div>
       {savedPath && (
@@ -81,7 +103,8 @@ export function BackupPanel() {
         </p>
       )}
       <p className="type-caption text-muted-foreground">
-        El archivo contiene datos personales y clínicos: guárdalo solo en una memoria de EIRA.
+        El respaldo contiene datos personales y clínicos: guárdalo solo en una memoria de EIRA. Los conteos (CSV) solo
+        traen totales por mes, sede y servicio: sin nombres, teléfonos, folios ni resultados.
       </p>
     </section>
   );
