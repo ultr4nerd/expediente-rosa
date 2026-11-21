@@ -144,6 +144,16 @@ Más detalle técnico en [`docs/`](docs/INDEX.md): decisiones de diseño, el con
 5. Hacer un piloto acotado en una jornada.
 6. Implementar la conservación y el borrado a 5 años.
 
+## Supuestos que hay que validar con EIRA
+
+Los tomamos de la guía y de la mentoría del hackathon:
+
+- El internet vuelve normalmente la misma noche.
+- Hay unas dos laptops por jornada.
+- Una sola persona captura a cada paciente.
+- Solo el personal médico ve y corrige los antecedentes sensibles.
+- Los expedientes se conservan unos 5 años y la paciente firma un aviso de privacidad.
+
 ## Preguntas abiertas para EIRA
 
 - ¿El folio tiene que quedar escrito en la hoja o en la Cartilla EIRA el mismo día, o puede asignarse en la noche al sincronizar?
