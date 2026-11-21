@@ -49,14 +49,19 @@
   <button id="prev">← Anterior</button>
   <button id="nextBtn" class="primary">Siguiente →</button>
 </div>
-<p class="help">Teclado: espacio = iniciar o pausar · ← → = paso · R = reiniciar. "Abrir presentación" abre las diapositivas en otra ventana; en los pasos 1 y 7 cambian solas.</p>
+<div class="controls">
+  <button id="slPrev">◀ Diapositiva</button>
+  <button disabled>Diapositiva <b id="slideNo">1</b> / 7</button>
+  <button id="slNext">Diapositiva ▶</button>
+</div>
+<p class="help">Teclado: espacio = iniciar o pausar · ← → = paso · R = reiniciar. En la Mac abre /screen.html: sigue las diapositivas que elijas aquí. Los pasos 1, 2 y 7 cambian la diapositiva solos.</p>
 
 <script>
 const STEPS = [
-  { t:[0,15], who:"Tú", title:"El problema", slide:1,
-    do:"Diapositiva 1 en pantalla.",
+  { t:[0,15], who:"Tú", title:"El problema", slide:2,
+    do:"Diapositiva 2 (el problema) en pantalla.",
     say:"María viajó horas para su Papanicolaou. Si regresa y nadie encuentra su historia, empieza de cero. EIRA atiende hasta 150 mujeres así, sin señal, con papel y Excel. Nos dijeron: después de 100 expedientes ya no sé si estoy capturando bien." },
-  { t:[15,35], who:"Miguel", title:"Reconocerla sin adivinar",
+  { t:[15,35], who:"Miguel", title:"Reconocerla sin adivinar", slide:4,
     do:"Miguel (Laura) busca “Maria Ejenplo” → dos Marías con el porqué → “Es la misma persona”.",
     say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona. Siempre se busca antes de registrar." },
   { t:[35,55], who:"Miguel", title:"No volver a preguntar",
@@ -71,8 +76,8 @@ const STEPS = [
   { t:[85,105], who:"Tú", title:"El médico (privacidad)",
     do:"Sales y entras como Ana (2222) → María → “Mostrar” en antecedentes. Si falta tiempo, no lo muestres: solo dilo.",
     say:"Lo más íntimo de María solo lo ve quien la atiende, y queda registro de cada consulta. Además, Hilo le dice a EIRA quién debe volver y cuándo." },
-  { t:[105,120], who:"Tú", title:"Cierre", slide:5,
-    do:"Diapositiva 5 en pantalla.",
+  { t:[105,120], who:"Tú", title:"Cierre", slide:6,
+    do:"Diapositiva 6 (real, simulado, no probado) en pantalla.",
     say:"Es un prototipo con datos ficticios; lo siguiente es probarlo con EIRA, en sus laptops, en una jornada real. Hilo no diagnostica: cuida que la historia de cada mujer no se pierda y que EIRA sepa quién debe volver. Una mujer, una historia." },
 ];
 const TOTAL = 120;
@@ -90,8 +95,16 @@ function render() {
      <div class="say">“${s.say.replace(/^“|”$/g,"")}”</div>`;
   const n = STEPS[i+1];
   $("next").innerHTML = n ? `Siguiente: <b>${n.title}</b> · ${n.who}` : "Último paso";
-  if (s.slide && deck && !deck.closed) { try { deck.location.hash = "#" + s.slide; } catch (e) {} }
+  if (s.slide) setSlide(s.slide);
   tick();
+}
+let slide = 1;
+const remote = location.protocol.startsWith("http");
+function setSlide(n) {
+  slide = Math.min(7, Math.max(1, n));
+  if (deck && !deck.closed) { try { deck.location.hash = "#" + slide; } catch (e) {} }
+  if (remote) fetch("/api/state", { method: "POST", body: JSON.stringify({ slide, step: i + 1 }) }).catch(() => {});
+  const el = document.getElementById("slideNo"); if (el) el.textContent = slide;
 }
 function now() { return running ? elapsed + (performance.now() - startAt) / 1000 : elapsed; }
 function tick() {
@@ -111,10 +124,12 @@ function reset() { running = false; elapsed = 0; i = 0; $("start").textContent =
 function go(d) { i = Math.min(STEPS.length - 1, Math.max(0, i + d)); render(); }
 
 $("start").onclick = toggle;
+$("slPrev").onclick = () => setSlide(slide - 1);
+$("slNext").onclick = () => setSlide(slide + 1);
+$("openDeck").onclick = () => { deck = window.open(remote ? "screen.html" : "index.html#1", "hilo-deck"); };
 $("reset").onclick = reset;
 $("prev").onclick = () => go(-1);
 $("nextBtn").onclick = () => go(1);
-$("openDeck").onclick = () => { deck = window.open("index.html#1", "hilo-deck"); };
 document.addEventListener("keydown", (e) => {
   if (e.key === " ") { e.preventDefault(); toggle(); }
   else if (e.key === "ArrowRight") go(1);

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Hilo · Presentación</title>
+<style>html,body{margin:0;height:100%;background:#000}iframe{border:0;width:100%;height:100%;display:block}</style>
+</head>
+<body>
+<iframe id="deck" src="index.html#1" allowfullscreen></iframe>
+<script>
+// Follows the slide chosen on the phone (presenter.html) through /api/state.
+const deck = document.getElementById("deck");
+let current = 1;
+async function poll() {
+  try {
+    const s = await (await fetch("/api/state", { cache: "no-store" })).json();
+    if (s.slide && s.slide !== current) {
+      current = s.slide;
+      deck.contentWindow.location.hash = "#" + current;
+    }
+  } catch (e) {}
+}
+setInterval(poll, 400);
+document.addEventListener("keydown", (e) => { if (e.key === "f") document.documentElement.requestFullscreen?.(); });
+</script>
+</body>
+</html>
