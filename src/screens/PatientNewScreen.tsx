@@ -25,6 +25,8 @@ import {
   type IdentityField,
 } from "@/domain/identity";
 import { isTauri, platform } from "@/platform";
+import { ContingencyIntake, emptyPaperIntake, paperIntakeError } from "@/components/ContingencyIntake";
+import { normalizePaperFolio, paperIntakeEvent } from "@/domain/contingency";
 import { deviceInfo } from "@/platform/tauri";
 import { cn } from "@/lib/utils";
 
@@ -77,6 +79,7 @@ export function PatientNewScreen() {
   const [draft, setDraft] = useState<IdentityDraft>(emptyDraft);
   const [birthText, setBirthText] = useState("");
   const [privacy, setPrivacy] = useState(false);
+  const [paper, setPaper] = useState(emptyPaperIntake);
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [device, setDevice] = useState<string | null>(null);
@@ -111,8 +114,8 @@ export function PatientNewScreen() {
     if (saving) return;
     setSubmitted(true);
     const first = FIELD_ORDER.find((f) => errors[f]);
-    if (first || privacyError) {
-      const target = first ? fieldId(first) : fieldId("privacy");
+    if (first || privacyError || paperIntakeError(paper)) {
+      const target = first ? fieldId(first) : privacyError ? fieldId("privacy") : "pn-paperFolio";
       document.getElementById(target)?.focus();
       toast.error("Faltan datos o hay algo que revisar. Te llevé al primer campo.");
       return;
@@ -129,6 +132,8 @@ export function PatientNewScreen() {
       await recordsSource().append([
         newEvent("patient.created", patientId, { identity: toIdentity(draft), provisionalFolio }, actor, { at: now }),
         newEvent("privacy.accepted", patientId, { noticeVersion: PRIVACY_NOTICE_VERSION, acceptedOn: now.slice(0, 10) }, actor, { at: now }),
+        // ISS-0018: typed in from a paper contingency sheet.
+        ...(paper.fromPaper ? [paperIntakeEvent(patientId, normalizePaperFolio(paper.paperFolio)!, actor, now)] : []),
       ]);
       toast.success(`Paciente registrada con folio provisional ${provisionalFolio}.`);
       go({ name: "patient", patientId });
@@ -165,6 +170,7 @@ export function PatientNewScreen() {
       </header>
 
       <form ref={formRef} onSubmit={save} noValidate className="flex flex-col gap-lg">
+        <ContingencyIntake value={paper} onChange={setPaper} showError={submitted} />
         <Group title="Identidad">
           <Field id={fieldId("fullName")} label="Nombre completo" error={shown("fullName")}>
             <Input

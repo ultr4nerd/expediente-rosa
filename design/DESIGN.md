@@ -92,6 +92,7 @@ cervical cancer prevention). Used by doctors and *capturistas* (data-entry staff
 |---|---|---|
 | Desktop app (Tauri, WebView2) | Tokens via `design/tokens.css` + Tailwind v4 + shadcn/ui | [shadcn/ui](targets/shadcn.md) |
 | App icon | `src/assets/brand/app-icon-1024.png` → `pnpm tauri icon` | [wordmark](components/wordmark.md) |
+| Printed contingency sheet | Black on white, one sheet per page, `print:` variants | [print](targets/print.md) |
 
 ## Components
 
