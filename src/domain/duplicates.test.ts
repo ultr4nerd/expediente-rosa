@@ -35,7 +35,7 @@ describe("findDuplicateProposals", () => {
     expect(p.survivorId).toBe("pa");
     expect(p.aliasId).toBe("pb");
     expect(p.reasons).toContain("Misma fecha de nacimiento");
-    expect(p.reasons).toContain("Registradas en equipos distintos (A y B)");
+    expect(p.reasons).toContain("Registradas en laptops distintas (A y B)");
   });
 
   it("prefers the record that already has a final folio as survivor", () => {

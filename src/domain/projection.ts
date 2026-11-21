@@ -155,13 +155,13 @@ const SERVICE_LABEL: Record<ServiceType, string> = {
 const FIELD_LABEL: Record<string, string> = {
   "identity.fullName": "nombre",
   "identity.birthDate": "fecha de nacimiento",
-  "identity.birthState": "estado de nacimiento",
-  "identity.residence": "domicilio",
+  "identity.birthState": "entidad de nacimiento",
+  "identity.residence": "residencia habitual",
   "identity.municipality": "municipio",
   "identity.phone": "teléfono",
-  "identity.phoneAlt": "teléfono alterno",
+  "identity.phoneAlt": "otro teléfono",
   "identity.email": "correo",
-  "identity.affiliation": "derechohabiencia",
+  "identity.affiliation": "afiliación",
   "identity.affiliationNumber": "número de afiliación",
   "identity.hasCartilla": "Cartilla EIRA",
 };

@@ -72,7 +72,7 @@ export function findDuplicateProposals(records: readonly DuplicateCandidate[], o
 
       const reasons = [...match.reasons];
       if (a.created && b.created && a.created.device !== b.created.device) {
-        reasons.push(`Registradas en equipos distintos (${survivor.created!.device} y ${alias.created!.device})`);
+        reasons.push(`Registradas en laptops distintas (${survivor.created!.device} y ${alias.created!.device})`);
       }
       out.push({ survivorId: survivor.patientId, aliasId: alias.patientId, score: match.score, reasons, match });
     }

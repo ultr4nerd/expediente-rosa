@@ -148,7 +148,7 @@ function IdentityCard({ record }: { record: PatientRecord }) {
       </h2>
       <dl className="grid gap-md sm:grid-cols-2 lg:grid-cols-1">
         <Row label="Fecha de nacimiento">{formatDate(identity.birthDate)}</Row>
-        <Row label="Entidad de nacimiento">{identity.birthState || "Sin dato"}</Row>
+        <Row label="Entidad de nacimiento">{identity.birthState || "Sin registro"}</Row>
         <Row label="Afiliación">
           {AFFILIATION[identity.affiliation]}
           {identity.affiliationNumber && <span className="text-muted-foreground"> · {identity.affiliationNumber}</span>}

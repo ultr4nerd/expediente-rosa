@@ -40,7 +40,7 @@ export const formatPhone = (p: string) =>
   p.length === 10 ? `${p.slice(0, 3)} ${p.slice(3, 6)} ${p.slice(6)}` : p;
 
 const show = (field: ContactField, v: unknown) =>
-  typeof v === "string" && v ? (field === "email" ? v : formatPhone(v)) : "Sin dato";
+  typeof v === "string" && v ? (field === "email" ? v : formatPhone(v)) : "Sin registro";
 
 interface HistoryItem {
   value: unknown;

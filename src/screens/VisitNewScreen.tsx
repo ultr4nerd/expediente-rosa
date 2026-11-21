@@ -11,7 +11,7 @@ import { useNavigation } from "@/app/navigation";
 import { canSeeSensitive, useSession } from "@/app/session";
 import { useRecords } from "@/app/useRecords";
 import type { AnyEvent, CitologiaFields, MamaFields, StableHistory } from "@/domain/events";
-import { isFinalFolio, newEvent, type Actor } from "@/domain/factory";
+import { newEvent, type Actor } from "@/domain/factory";
 import { resolvePatient, type PatientRecord, type RecordsModel } from "@/domain/projection";
 import {
   CITOLOGY_KIND_LABEL,
@@ -29,6 +29,8 @@ import { isTauri } from "@/platform";
 import { deviceInfo } from "@/platform/tauri";
 import { AutofillBox, ChipGroup, ChoiceGroup, VisitField, VisitGroup, describedBy, type AutofillStatus } from "@/components/VisitFields";
 import { VisitHistory, type HistoryMode } from "@/components/VisitHistory";
+import { FolioTag } from "@/components/MatchCard";
+import { RoleLocked } from "@/components/RoleSensitive";
 
 const todayLocal = () => new Date().toLocaleDateString("sv-SE"); // YYYY-MM-DD in local time
 
@@ -67,6 +69,11 @@ const KINDS = (Object.keys(CITOLOGY_KIND_LABEL) as CitologyKind[]).map((k) => ({
 
 const FIELD_ORDER: DraftField[] = ["site", "date", "heightCm", "weightKg", "bloodPressure", "glucose", "lastMenstrualPeriod", "reason", "lastMammogramDate"];
 const fid = (f: string) => `vn-${f}`;
+
+/** Same look as the chip/choice groups in VisitFields, so a selected service reads as selected. */
+const serviceClass = (on: boolean) =>
+  `flex h-control cursor-pointer items-center gap-sm rounded-md border px-md type-label has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background ${
+    on ? "border-primary bg-secondary text-secondary-foreground" : "border-input bg-card hover:bg-accent"}`;
 
 /** Site of the last visit recorded in this jornada (any patient), so the site is typed once per day. */
 function siteForJornada(model: RecordsModel, jornadaId: string): string {
@@ -254,7 +261,7 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
   return (
     <section className="mx-auto flex w-full max-w-prose flex-col gap-lg">
       <header className="flex flex-col gap-sm">
-        <Button type="button" variant="ghost" size="sm" className="self-start" onClick={() => go({ name: "patient", patientId: record.patientId })}>
+        <Button type="button" variant="ghost" className="-ml-md self-start" onClick={() => go({ name: "patient", patientId: record.patientId })}>
           <ArrowLeft aria-hidden="true" />
           Volver al expediente
         </Button>
@@ -269,13 +276,7 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
               {id.municipality} · Nació el {formatDate(id.birthDate)} en {id.birthState}
             </p>
           </div>
-          <span
-            className={isFinalFolio(record.folio)
-              ? "rounded-md border bg-card px-md py-sm type-folio"
-              : "rounded-md border-2 border-dashed border-warning-border bg-warning-subtle px-md py-sm type-folio text-on-warning-subtle"}
-          >
-            {record.folio}
-          </span>
+          <FolioTag folio={record.folio} provisionalFolio={record.provisionalFolio} />
         </div>
         <div role="status" className="flex flex-wrap items-center justify-between gap-sm rounded-md border-l-4 border-autofill-border bg-autofill p-sm text-on-autofill">
           <span className="flex items-center gap-sm type-body-strong">
@@ -283,7 +284,7 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
             {auto.reusedCount} datos reutilizados del historial
           </span>
           {pendingCount > 0 && (
-            <Button type="button" variant="outline" size="sm" onClick={confirmAll}>
+            <Button type="button" variant="outline" onClick={confirmAll}>
               Confirmar todo lo del historial ({pendingCount})
             </Button>
           )}
@@ -332,11 +333,11 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
 
         <div className="flex flex-wrap items-center gap-sm" role="group" aria-label="Servicios de esta visita">
           <span className="type-label">Servicios:</span>
-          <label className="flex h-control cursor-pointer items-center gap-sm rounded-md border bg-card px-md type-label has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+          <label className={serviceClass(doCito)}>
             <input type="checkbox" className="size-4 accent-primary" checked={doCito} onChange={(e) => setDoCito(e.target.checked)} />
             Citología
           </label>
-          <label className="flex h-control cursor-pointer items-center gap-sm rounded-md border bg-card px-md type-label has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring">
+          <label className={serviceClass(doMama)}>
             <input type="checkbox" className="size-4 accent-primary" checked={doMama} onChange={(e) => setDoMama(e.target.checked)} />
             Revisión mamaria
           </label>
@@ -356,7 +357,7 @@ export function VisitForm({ record, model }: { record: PatientRecord; model: Rec
               <ChipGroup id={fid("risk")} legend="16. Factores de riesgo" options={RISK} value={cito.risk}
                 onChange={(v) => setCito((c) => ({ ...c, risk: v }))} />
             ) : (
-              <p className="rounded-md bg-surface-sunken p-md type-caption text-muted-foreground">16. Factores de riesgo: •••• Oculto para tu rol.</p>
+              <RoleLocked label="16. Factores de riesgo" />
             )}
             <ChoiceGroup id={fid("repeated")} name="repeated" legend="19. ¿Es muestra repetida?" value={cito.repeated}
               options={[{ value: "no", label: "No" }, { value: "si", label: "Sí" }]} onChange={(v) => setCito((c) => ({ ...c, repeated: v }))} />

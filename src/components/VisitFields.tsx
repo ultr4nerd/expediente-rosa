@@ -86,7 +86,7 @@ export function AutofillBox({
       )}
       {children}
       {active && (
-        <Button type="button" variant="outline" size="sm" className="self-start" onClick={onConfirm}>
+        <Button type="button" variant="outline" className="self-start" onClick={onConfirm}>
           <Check aria-hidden="true" />
           Confirmar
         </Button>

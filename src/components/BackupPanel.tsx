@@ -80,7 +80,7 @@ export function BackupPanel() {
         </p>
       </div>
       <div className="flex flex-wrap gap-sm">
-        <Button type="button" onClick={download} disabled={busy}>
+        <Button type="button" variant="outline" onClick={download} disabled={busy}>
           <Download aria-hidden="true" />
           Descargar respaldo
         </Button>

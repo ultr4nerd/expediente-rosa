@@ -46,7 +46,7 @@ export function ContingencyButton() {
     <>
       <Button type="button" variant="outline" onClick={() => setOpen(true)}>
         <FileText aria-hidden="true" />
-        Hoja de contingencia
+        Preparar hojas para imprimir
       </Button>
       {open && <ContingencySheets onClose={() => setOpen(false)} />}
     </>
