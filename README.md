@@ -90,7 +90,7 @@ Para ver solo la interfaz sin Rust ni Docker: `pnpm dev` y abre http://localhost
 
 **Para reiniciar la demo:** `scripts/demo-reset.sh` borra los datos de las dos laptops y de la central. Al arrancar se cargan 30 pacientes ficticias, entre ellas María Ejemplo y María Ejemplar.
 
-**Pruebas:** `pnpm verify` corre los 101 tests de TypeScript y las revisiones del proyecto. En `src-tauri/`, `cargo test` corre los 13 de Rust. En `server/`, `npm test` corre los 12 de la central contra un Valkey real.
+**Pruebas:** `pnpm verify` corre los 104 tests de TypeScript y las revisiones del proyecto. En `src-tauri/`, `cargo test` corre los 13 de Rust. En `server/`, `npm test` corre los 12 de la central contra un Valkey real.
 
 ## Cómo funciona
 
@@ -108,6 +108,7 @@ Para ver solo la interfaz sin Rust ni Docker: `pnpm dev` y abre http://localhost
 - **Cada cambio es un evento que nunca se borra.** Alta, cambio de teléfono, visita, resultado, vinculación… Con eso, el historial, la bitácora y la sincronización salen de lo mismo: sincronizar es intercambiar los eventos que la otra parte no tiene.
 - **Folio sin choques.** Sin red, la laptop pone un folio provisional que se ve distinto (`A-0007`). Al sincronizar, Valkey asigna el consecutivo del año (`2026-0143`) con una operación atómica. El provisional sigue sirviendo para buscar.
 - **Valkey listo para crecer y con permisos mínimos.** Todas las llaves comparten el prefijo `{er}`, así que el script atómico funciona igual en Valkey Cluster. La central entra con un usuario ACL que solo puede usar los comandos que necesita sobre sus propias llaves.
+- **La clave EIRA de siempre, sin teclearla.** Hilo calcula la clave que EIRA usa hoy en papel (por ejemplo `CHOM981221`: 2 letras del primer apellido, 1 del segundo, 1 del nombre y la fecha AAMMDD), la muestra en el expediente y permite buscar con ella. Como dos personas pueden compartirla, no es el identificador único: si se repite, Hilo lo avisa y una persona confirma.
 - **Siempre se busca antes de registrar.** Si la búsqueda no encuentra a la paciente, el registro se abre con lo que ya se escribió (nombre, fecha, teléfono). Así es más difícil crear un duplicado sin darse cuenta.
 - **¿Por qué app de escritorio y no web?** Lo que guarda un navegador se puede borrar al limpiar sus datos, y no va cifrado. En una laptop que viaja a comunidades, con expedientes que se conservan 5 años, eso no es aceptable.
 

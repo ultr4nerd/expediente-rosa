@@ -17,6 +17,7 @@ import type { Affiliation, EventType } from "@/domain/events";
 import { isFinalFolio } from "@/domain/factory";
 import { isSeedFolio } from "@/domain/seed";
 import { ageOn } from "@/domain/identity";
+import { eiraKey } from "@/domain/matching";
 import { resolvePatient, type PatientRecord, type TimelineEntry } from "@/domain/projection";
 import { cn } from "@/lib/utils";
 
@@ -155,6 +156,10 @@ function IdentityCard({ record }: { record: PatientRecord }) {
         <Row label="Afiliación">
           {AFFILIATION[identity.affiliation]}
           {identity.affiliationNumber && <span className="text-muted-foreground"> · {identity.affiliationNumber}</span>}
+        </Row>
+        <Row label="Clave EIRA">
+          <span className="type-folio">{eiraKey(identity)}</span>
+          <span className="block type-caption text-muted-foreground">Calculada del nombre y la fecha; puede repetirse entre personas.</span>
         </Row>
         <Row label="Cartilla EIRA">{identity.hasCartilla ? "Sí cuenta con ella" : "No cuenta con ella"}</Row>
       </dl>

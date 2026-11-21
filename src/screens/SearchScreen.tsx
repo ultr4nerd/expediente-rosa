@@ -10,7 +10,7 @@ import { useRecords } from "@/app/useRecords";
 import { useNavigation } from "@/app/navigation";
 import { useSession } from "@/app/session";
 import { newEvent } from "@/domain/factory";
-import { looksLikeFolio, matchPatients, searchByFolio, type MatchCandidate } from "@/domain/matching";
+import { looksLikeEiraKey, looksLikeFolio, matchPatients, searchByEiraKey, searchByFolio, type MatchCandidate } from "@/domain/matching";
 import { parseSearchText, prefillFromSearch } from "@/domain/searchQuery";
 import { isTauri } from "@/platform";
 import { deviceInfo } from "@/platform/tauri";
@@ -20,6 +20,7 @@ import estadoVacio from "@/assets/illustrations/estado-vacio.webp";
 function search(text: string, candidates: readonly MatchCandidate[]) {
   const t = text.trim();
   if (t.length < 2) return [];
+  if (looksLikeEiraKey(t)) return searchByEiraKey(t, candidates);
   if (looksLikeFolio(t)) return searchByFolio(t, candidates);
   const query = parseSearchText(t);
   if (!query.fullName && !query.phone && !query.birthDate) return [];

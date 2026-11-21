@@ -203,6 +203,38 @@ export function curpKey(identity: Pick<Identity, "fullName" | "birthDate" | "bir
 }
 
 // ---------------------------------------------------------------------------
+// EIRA key: the ID EIRA uses today on paper, e.g. "Mauricio Chávez Olea", 21/12/1998 -> "CHOM981221".
+// 2 letters of the first surname + 1 of the second + 1 of the first given name + YYMMDD.
+// Two different people can share it, so it is a search/matching aid, never the unique identifier.
+
+const EIRA_KEY_RE = /^\s*[A-Za-zÑñ]{4}\s*\d{6}\s*$/;
+
+/** True when the text looks like an EIRA key ("CHOM981221"). */
+export const looksLikeEiraKey = (text: string) => EIRA_KEY_RE.test(text);
+
+export function eiraKey(identity: Pick<Identity, "fullName" | "birthDate">): string {
+  const { given, surname1, surname2 } = splitName(identity.fullName);
+  const s1 = (surname1 || "XX").padEnd(2, "X").slice(0, 2);
+  const s2 = surname2 ? surname2[0] : "X";
+  const n = given[0]?.[0] ?? "X";
+  const date = digitsOnly(identity.birthDate);
+  return s1 + s2 + n + (date.length === 8 ? date.slice(2) : "000000");
+}
+
+/** Records whose computed EIRA key equals the query. Can return several people: a human confirms. */
+export function searchByEiraKey(text: string, candidates: readonly MatchCandidate[]): MatchResult[] {
+  const q = text.replace(/\s/g, "").toUpperCase().replace(/Ñ/g, "X");
+  const out: MatchResult[] = [];
+  for (const c of candidates) {
+    if (c.status === "alias") continue;
+    if (eiraKey(c.identity) !== q) continue;
+    out.push({ patientId: c.patientId, score: 0.9, reasons: [`Misma clave EIRA (${q})`], signals: {}, candidate: c });
+  }
+  if (out.length > 1) for (const r of out) r.reasons.push("Otra paciente comparte esta clave: confirma nombre y fecha");
+  return out.sort((a, b) => (a.patientId < b.patientId ? -1 : 1));
+}
+
+// ---------------------------------------------------------------------------
 // Matching
 
 const WEIGHTS = { name: 0.45, birthDate: 0.3, phone: 0.15, municipality: 0.1 };
@@ -347,6 +379,7 @@ export function searchByFolio(text: string, candidates: readonly MatchCandidate[
 /** One search box: a folio if it looks like one, otherwise a name. */
 export function searchPatients(text: string, candidates: readonly MatchCandidate[], opts: MatchOptions = {}): MatchResult[] {
   if (!text.trim()) return [];
+  if (looksLikeEiraKey(text)) return searchByEiraKey(text, candidates);
   if (looksLikeFolio(text)) return searchByFolio(text, candidates);
   return matchPatients({ fullName: text }, candidates, opts);
 }
