@@ -1,5 +1,5 @@
 ---
-title: MVP Expediente Rosa
+title: MVP Hilo
 description: "Closed scope of the hackathon MVP: architecture, event model, P0/P1/out, demo and schedule"
 read_when: Before building or cutting any feature, or when preparing the demo
 id: mvp-expediente-rosa
@@ -8,7 +8,7 @@ updated: 2026-11-21
 tags: [mvp, alcance]
 ---
 
-# MVP Expediente Rosa
+# MVP Hilo
 
 ## Goal
 

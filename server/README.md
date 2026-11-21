@@ -1,4 +1,4 @@
-# Expediente Rosa central (Hono + Valkey)
+# Hilo central (Hono + Valkey)
 
 Central sync point for the desktop app. Contract: `docs/specs/sync-protocol-and-platform-contract.md`; why Valkey: `docs/decisions/0004-*.md`.
 

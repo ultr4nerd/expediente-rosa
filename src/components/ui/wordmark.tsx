@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-/** Marca de Expediente Rosa: carpeta con listón. Colores por token (primary, background). */
+/** Marca de Hilo: carpeta con listón. Colores por token (primary, background). */
 function BrandMark({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <svg viewBox="0 0 1024 1024" aria-hidden="true" className={cn("size-10 shrink-0", className)} {...props}>
@@ -20,20 +20,20 @@ function BrandMark({ className, ...props }: React.ComponentProps<"svg">) {
 }
 
 type WordmarkProps = React.ComponentProps<"div"> & {
-  /** Muestra "con EIRA Movimiento Rosa" debajo del nombre. */
+  /** Muestra "para EIRA Movimiento Rosa" debajo del nombre. */
   withEndorsement?: boolean
 }
 
-/** Wordmark "Expediente Rosa". Úsalo en la barra superior y la pantalla de inicio. */
+/** Wordmark "Hilo". Úsalo en la barra superior y la pantalla de inicio. */
 function Wordmark({ className, withEndorsement = false, ...props }: WordmarkProps) {
   return (
     <div data-slot="wordmark" className={cn("flex items-center gap-sm", className)} {...props}>
       <BrandMark />
       <div className="flex flex-col">
         <span className="type-heading text-foreground">
-          Expediente <span className="text-brand-text">Rosa</span>
+          <span className="text-brand-text">Hilo</span>
         </span>
-        {withEndorsement && <span className="type-caption text-muted-foreground">con EIRA Movimiento Rosa</span>}
+        {withEndorsement && <span className="type-caption text-muted-foreground">para EIRA Movimiento Rosa</span>}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-/* Estilos globales de Expediente Rosa.
+/* Estilos globales de Hilo.
    Los valores salen de design/tokens.json (`pnpm design build`). No pongas colores, tamaños
    ni sombras literales aquí: agrega o cambia un token. */
 @import "tailwindcss";
@@ -48,7 +48,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Roles propios de Expediente Rosa (estados de sync, folio, autollenado). tokens.css los define
+  /* Roles propios de Hilo (estados de sync, folio, autollenado). tokens.css los define
      sin capa, así que su valor gana; esto solo crea las utilidades bg-success, text-on-warning-subtle... */
   --color-surface: var(--color-surface);
   --color-surface-raised: var(--color-surface-raised);

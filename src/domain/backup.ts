@@ -58,7 +58,7 @@ export function parseBackup(text: string): ParsedBackup {
   }
   const obj = data as Partial<BackupFile> | null;
   const list = Array.isArray(data) ? data : obj && obj.format === BACKUP_FORMAT && Array.isArray(obj.events) ? obj.events : null;
-  if (!list) return { ok: false, error: "El archivo no es un respaldo de Expediente Rosa." };
+  if (!list) return { ok: false, error: "El archivo no es un respaldo de Hilo." };
   if (!Array.isArray(data) && (obj?.version ?? 0) > BACKUP_VERSION) {
     return { ok: false, error: "El respaldo es de una versión más nueva de la app. Actualízala primero." };
   }

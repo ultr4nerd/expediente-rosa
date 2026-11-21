@@ -2,10 +2,10 @@
   <img src="src/assets/brand/app-icon.svg" width="96" alt="" />
 </p>
 
-<h1 align="center">Expediente Rosa</h1>
+<h1 align="center">Hilo</h1>
 
 <p align="center">
-  <strong>Un solo expediente por paciente, con o sin señal.</strong><br />
+  <strong>Una mujer, una historia.</strong> Un solo expediente por paciente, con o sin señal.<br />
   App de escritorio para <a href="https://eiraac.org/">EIRA Movimiento Rosa A.C.</a>: registra a cada paciente una sola vez, la reconoce cuando regresa y funciona en jornadas médicas sin internet.
 </p>
 

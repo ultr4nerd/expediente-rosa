@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Entry point for any agent (Claude Code, Codex, Gemini CLI, Cursor, Devin) or human working in **Expediente Rosa**: a desktop app (Tauri 2) giving EIRA Movimiento Rosa A.C. a single patient record that works offline. Built at the Vibeathon Nerdearla México 2026 (Reto 1). `CLAUDE.md`, `GEMINI.md` and `.github/copilot-instructions.md` point here.
+Entry point for any agent (Claude Code, Codex, Gemini CLI, Cursor, Devin) or human working in **Hilo**: a desktop app (Tauri 2) giving EIRA Movimiento Rosa A.C. a single patient record that works offline. Built at the Vibeathon Nerdearla México 2026 (Reto 1). `CLAUDE.md`, `GEMINI.md` and `.github/copilot-instructions.md` point here.
 
 **Language (decision 0006):**
 

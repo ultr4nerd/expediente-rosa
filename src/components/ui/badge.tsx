@@ -17,7 +17,7 @@ const badgeVariants = cva(
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         link: "text-primary underline-offset-4 [a&]:hover:underline",
-        // Estados de Expediente Rosa (ver design/components/badge.md)
+        // Estados de Hilo (ver design/components/badge.md)
         success: "border-success-border bg-success-subtle text-on-success-subtle",
         warning: "border-warning-border/40 bg-warning-subtle text-on-warning-subtle",
         danger: "border-danger-border bg-danger-subtle text-on-danger-subtle",

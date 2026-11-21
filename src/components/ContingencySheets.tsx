@@ -120,7 +120,7 @@ function Sheet({ folio, device, jornadaId }: { folio: string; device: string; jo
     <article className="flex w-full max-w-3xl flex-col gap-md rounded-card border bg-card p-lg text-foreground shadow-sm break-after-page print:max-w-none print:rounded-none print:border-0 print:shadow-none">
       <header className="flex items-start justify-between gap-md border-b border-foreground pb-sm">
         <div className="flex flex-col">
-          <span className="type-heading">Expediente Rosa · Hoja de contingencia</span>
+          <span className="type-heading">Hilo · Hoja de contingencia</span>
           <span className="type-caption">Laptop {device} · {jornadaId} · Fecha: ____ / ____ / ________</span>
         </div>
         <div className="flex flex-col items-end rounded-md border-2 border-dashed border-foreground px-md py-xs">

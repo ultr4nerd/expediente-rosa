@@ -1,12 +1,12 @@
 ---
-title: Expediente Rosa design system
+title: Hilo design system
 description: "Entry point: principles, voice, foundations, key patterns (sync, folio, matches, autofill) and component inventory"
-read_when: Before building or changing any Expediente Rosa screen, component or asset
+read_when: Before building or changing any Hilo screen, component or asset
 status: current
 updated: 2026-11-21
 ---
 
-# Expediente Rosa design system
+# Hilo design system
 
 Read this, then `design/TOKENS.md` (or `pnpm design show color`) and only the spec you are about to use.
 Use tokens or shadcn classes (`bg-primary`, `text-muted-foreground`), never raw hex or px. `pnpm design check` must pass.
