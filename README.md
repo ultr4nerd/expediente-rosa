@@ -28,7 +28,8 @@ EIRA lleva prevención de cáncer de mama y cervicouterino a comunidades de Jali
 | **Reconoce a la paciente sin adivinar** | Busca por nombre, folio o teléfono, aunque haya errores de dedo o abreviaturas ("Ma."). Muestra **por qué** coincide cada resultado y **una persona decide**: "Es la misma persona" o "Es otra persona". Nunca fusiona expedientes por su cuenta. |
 | **No vuelve a pedir lo que ya sabe** | En la segunda visita llena solo lo que ya conoce: la identidad, el tipo de citología ("subsecuente"), el número citológico anterior, la última mastografía y los antecedentes que no cambian. Solo se capturan los datos de hoy. |
 | **Funciona todo el día sin internet** | Cada laptop guarda los expedientes **cifrados** en su disco. Al volver la señal (normalmente en la noche), sincroniza con una central y recibe el **folio EIRA definitivo**, sin números repetidos entre laptops. |
-| **Cuida los datos sensibles** | La capturista no ve los antecedentes sensibles: solo el personal médico. Nada se borra. Cada cambio queda registrado con quién, cuándo y desde qué laptop. |
+| **Cuida los datos sensibles** | La capturista no ve los antecedentes sensibles: solo el personal médico. Nada se borra. Cada cambio, y cada vez que alguien revela un dato sensible, queda registrado con quién, cuándo y desde qué laptop. |
+| **No deja a nadie sin seguimiento** | Una lista muestra a las pacientes que deben volver (por ejemplo, una evaluación a seis meses) y cuándo. |
 
 ## Así se ve
 
@@ -44,14 +45,18 @@ EIRA lleva prevención de cáncer de mama y cervicouterino a comunidades de Jali
 
 | ✅ Real (funciona en la demo) | 🟡 Simulado (para el hackathon) | ⚪ No probado o pendiente |
 |---|---|---|
-| Base de datos local **cifrada** con SQLCipher: sin la clave, el archivo es ilegible | Inicio de sesión: usuarios ficticios con PIN de demostración | La app **ejecutándose en Windows**: se compila en CI, pero nadie la probó en una laptop Windows |
-| Captura completa **sin internet** y sincronización al volver la red | Clave de cifrado de demostración (`jornada-demo`); en producción sería una frase por jornada | El **hub entre laptops** sin internet: implementado y probado con tests; queda pendiente probarlo en vivo con dos laptops |
-| Central con **Valkey**: registro de eventos sin duplicados y **folio definitivo** consecutivo sin choques | Los **roles** se aplican en la interfaz; en producción el servidor también filtraría por rol | Registro en la bitácora de quién **consultó** un dato sensible (hoy solo se registran los cambios) |
-| Búsqueda tolerante a errores con razones y **confirmación humana** | Datos de pacientes: todos ficticios | Borrado de expedientes a los 5 años: diseñado, no implementado |
+| Base de datos local **cifrada** con SQLCipher: sin la clave, el archivo es ilegible | Inicio de sesión: usuarios ficticios con PIN de demostración | La app **ejecutándose en Windows**: el instalador (MSI y NSIS) se genera en CI, pero nadie lo probó en una laptop Windows |
+| Captura completa **sin internet** y sincronización al volver la red | Clave de cifrado de demostración (`jornada-demo`); en producción sería una frase por jornada | Probarla con el personal de EIRA en una jornada real |
+| Central con **Valkey**: registro de eventos sin duplicados y **folio definitivo** consecutivo sin choques | Los **roles** se aplican en la interfaz; en producción el servidor también filtraría por rol | Borrado de expedientes a los 5 años: diseñado, no implementado |
+| Búsqueda tolerante a errores con razones y **confirmación humana** | Datos de pacientes: todos ficticios | |
 | Autollenado desde el historial y validaciones contra errores de captura | | |
 | Duplicado creado en dos laptops sin red → propuesta de vincular → una persona decide | | |
 | Resultado de citología (Bethesda) y mama (BI-RADS) capturado después por patólogo o médico | | |
 | Respaldo y restauración (JSON), exportación de estadísticas sin datos personales (CSV) y hoja de contingencia imprimible | | |
+| **Lista de seguimiento**: pacientes que requieren volver (por ejemplo, BI-RADS 3 a seis meses), sin mostrar hallazgos a la capturista | | |
+| **Bitácora de accesos**: cada vez que el personal médico revela un dato sensible queda registrado; solo administración ve la lista | | |
+| **Cartilla imprimible** con folio y un código QR que solo contiene el folio | | |
+| **Hub entre laptops**: una laptop sirve a la otra por la red local, sin internet (probado en vivo) | | |
 
 ## Cómo probarlo
 
@@ -83,7 +88,7 @@ Para ver solo la interfaz sin Rust ni Docker: `pnpm dev` y abre http://localhost
 
 **Para reiniciar la demo:** `scripts/demo-reset.sh` borra los datos de las dos laptops y de la central. Al arrancar se cargan 30 pacientes ficticias, entre ellas María Ejemplo y María Ejemplar.
 
-**Pruebas:** `pnpm verify` corre los 82 tests de TypeScript y las revisiones del proyecto. En `src-tauri/`, `cargo test` corre los 13 de Rust. En `server/`, `npm test` corre los 10 de la central contra un Valkey real.
+**Pruebas:** `pnpm verify` corre los 99 tests de TypeScript y las revisiones del proyecto. En `src-tauri/`, `cargo test` corre los 13 de Rust. En `server/`, `npm test` corre los 10 de la central contra un Valkey real.
 
 ## Cómo funciona
 
