@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 -- meta: 'remote_cursor' = last Valkey stream id pulled
 ```
 
-Events pulled from the central are inserted with `synced = 1`. `pending` = `COUNT(*) WHERE synced = 0`.
+Events pulled from the central are inserted with `synced = 1`. Events whose `device` is `S` (the fictitious seed, `src/domain/seed.ts`) are also stored with `synced = 1`: the seed is identical on every laptop, is never pushed, and its `folio.assigned` events would be rejected by the central. `pending` = `COUNT(*) WHERE synced = 0`.
 
 ### Central HTTP API (`server/`, Hono + Valkey)
 
