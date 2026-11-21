@@ -7,7 +7,8 @@ export type Route =
   | { name: "patient-new" }
   | { name: "patient"; patientId: string }
   | { name: "visit-new"; patientId: string }
-  | { name: "sync" };
+  | { name: "sync" }
+  | { name: "follow-up" };
 
 interface NavigationValue {
   route: Route;

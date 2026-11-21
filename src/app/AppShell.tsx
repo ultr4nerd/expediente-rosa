@@ -1,6 +1,6 @@
 // App frame: header with brand, sync state and user; main area renders the current screen.
 import type { ReactNode } from "react";
-import { LogOut, Search, UserPlus, RefreshCw } from "lucide-react";
+import { ClipboardList, LogOut, Search, UserPlus, RefreshCw } from "lucide-react";
 import { Wordmark } from "@/components/ui/wordmark";
 import { Button } from "@/components/ui/button";
 import { SyncIndicator } from "@/components/SyncIndicator";
@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { route, go } = useNavigation();
   // Patient screens belong to the search flow, so "Buscar" stays highlighted there.
   const section = route.name === "patient" || route.name === "visit-new" ? "search" : route.name;
-  const nav = (name: "search" | "patient-new" | "sync") => ({
+  const nav = (name: "search" | "patient-new" | "follow-up" | "sync") => ({
     variant: "ghost" as const,
     "aria-current": section === name ? ("page" as const) : undefined,
     className: section === name ? "bg-secondary text-secondary-foreground" : undefined,
@@ -26,6 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <nav aria-label="Principal" className="order-last flex w-full gap-sm xl:order-none xl:w-auto">
           <Button {...nav("search")}><Search aria-hidden="true" />Buscar</Button>
           <Button {...nav("patient-new")}><UserPlus aria-hidden="true" />Nueva paciente</Button>
+          <Button {...nav("follow-up")}><ClipboardList aria-hidden="true" />Seguimiento</Button>
           <Button {...nav("sync")}><RefreshCw aria-hidden="true" />Sincronización</Button>
         </nav>
         <div className="ml-auto flex items-center gap-sm">
