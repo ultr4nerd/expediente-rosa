@@ -1,4 +1,4 @@
-// Tauri platform: thin wrappers over the Rust commands defined in docs/specs/sync-protocol.md.
+// Tauri platform: thin wrappers over the Rust commands defined in docs/specs/sync-protocol-and-platform-contract.md.
 import { invoke } from "@tauri-apps/api/core";
 import type { AnyEvent } from "@/domain/events";
 import type { DeviceInfo, EventStore, SyncStatus, SyncTransport } from "@/domain/ports";
