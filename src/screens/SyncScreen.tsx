@@ -1,4 +1,4 @@
-// Sync detail: central URL, last sync, pending count and a manual "sync now".
+// "Enviar y recibir": plain status, sync button and duplicates for everyone; server address, hub and backup for admin.
 // Spec: docs/specs/sync-protocol-and-platform-contract.md; UI rules: design/DESIGN.md.
 import { useState } from "react";
 import { Cloud, CloudOff, Loader2, RefreshCw } from "lucide-react";
@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   DEFAULT_CENTRAL_URL,
-  pendingLabel,
   setCentralUrl,
   syncNow,
   useSync,
@@ -32,101 +31,117 @@ function formatDateTime(iso?: string): string {
 export function SyncScreen() {
   const { status, syncing, centralUrl } = useSync();
   const { user } = useSession();
+  // Field staff see only the status, the button and the duplicates; technical settings are for coordination.
   // The JSON backup holds every record unencrypted: only administration may export or restore it.
   const isAdmin = user?.role === "admin";
+  const canResolveConflicts = user?.role === "admin" || user?.role === "medico";
   const [draft, setDraft] = useState(centralUrl);
   const online = status.connectivity === "online";
+  const offline = status.connectivity === "offline";
+
+  const headline = offline
+    ? "Sin conexión: se enviará cuando vuelva la señal"
+    : status.pending > 0
+      ? `${status.pending === 1 ? "1 cambio" : `${status.pending} cambios`} por enviar`
+      : online
+        ? "Todo guardado en esta laptop y enviado a la oficina"
+        : "Todo guardado en esta laptop";
 
   return (
     <section className="flex w-full max-w-prose flex-col gap-lg">
-      <h1 className="type-title">Sincronización</h1>
+      <div className="flex flex-col gap-xs">
+        <h1 className="type-title">Enviar y recibir</h1>
+        <p className="text-muted-foreground">
+          Esta laptop guarda todo aunque no haya señal. Cuando haya internet, se envía a la oficina y se reciben los
+          folios definitivos.
+        </p>
+      </div>
 
       <DuplicatesPanel />
 
       {platform.kind === "memory" && (
         <p className="type-body text-muted-foreground">
-          Modo navegador: los datos viven solo en esta pestaña y no se sincronizan.
+          Versión de prueba en el navegador: lo que captures aquí no se envía.
         </p>
       )}
 
       <Card>
-        <CardHeader>
-          <CardTitle>Estado</CardTitle>
-          <CardDescription>Todo se guarda en esta laptop y se envía a la central cuando hay red.</CardDescription>
-        </CardHeader>
         <CardContent className="flex flex-col gap-md">
-          <dl className="grid grid-cols-2 gap-md">
-            <div className="flex flex-col gap-xs">
-              <dt className="type-label text-muted-foreground">Conexión con la central</dt>
-              <dd>
-                {online ? (
-                  <Badge variant="success"><Cloud aria-hidden="true" />En línea</Badge>
-                ) : status.connectivity === "offline" ? (
-                  <Badge variant="offline"><CloudOff aria-hidden="true" />Sin conexión</Badge>
-                ) : (
-                  <Badge variant="secondary">Comprobando</Badge>
-                )}
-              </dd>
-            </div>
-            <div className="flex flex-col gap-xs">
-              <dt className="type-label text-muted-foreground">Por enviar</dt>
-              <dd className="type-body-strong">
-                {status.pending === 0 ? "Nada pendiente" : pendingLabel(status.pending)}
-              </dd>
-            </div>
-            <div className="flex flex-col gap-xs">
-              <dt className="type-label text-muted-foreground">Última sincronización</dt>
-              <dd className="type-body">{formatDateTime(status.lastSyncAt)}</dd>
-            </div>
-          </dl>
+          <p role="status" className="flex items-center gap-sm type-heading">
+            {offline ? <CloudOff aria-hidden="true" className="size-5" /> : <Cloud aria-hidden="true" className="size-5" />}
+            {headline}
+          </p>
+          <p className="type-body text-muted-foreground">
+            Último envío: {formatDateTime(status.lastSyncAt)}.
+          </p>
           {status.lastError && (
             <p role="status" className="type-body text-on-danger-subtle bg-danger-subtle rounded-md p-sm">
-              No se pudo terminar la sincronización. Tus datos siguen guardados aquí; se reintentará sola.
+              No se pudo terminar el envío. Tus datos siguen guardados aquí; se volverá a intentar solo.
             </p>
           )}
           <Button size="lg" onClick={() => void syncNow()} disabled={syncing} className="self-start">
             {syncing ? <Loader2 aria-hidden="true" className="animate-spin" /> : <RefreshCw aria-hidden="true" />}
-            {syncing ? "Sincronizando…" : "Sincronizar ahora"}
+            {syncing ? "Enviando y recibiendo…" : "Sincronizar ahora"}
           </Button>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dirección de la central</CardTitle>
-          <CardDescription>Por defecto {DEFAULT_CENTRAL_URL}. Cámbiala solo si te lo indica el equipo.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="flex flex-wrap items-end gap-md"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setCentralUrl(draft);
-              setDraft(draft.trim() || DEFAULT_CENTRAL_URL);
-              void syncNow();
-            }}
-          >
-            <div className="flex min-w-0 flex-1 flex-col gap-xs">
-              <Label htmlFor="central-url">URL de la central</Label>
-              <Input
-                id="central-url"
-                type="url"
-                inputMode="url"
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                placeholder={DEFAULT_CENTRAL_URL}
-              />
-            </div>
-            <Button type="submit" variant="outline" disabled={draft.trim() === centralUrl}>
-              Guardar dirección
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-      <ConflictPanel />
-      <HubToggle />
+      {canResolveConflicts && <ConflictPanel />}
+
       {isAdmin && <BackupPanel />}
       <div><ContingencyButton /></div>
+      {isAdmin && (
+        <details className="flex flex-col gap-md rounded-card border bg-card p-md">
+          <summary className="min-h-control cursor-pointer type-body-strong">Opciones avanzadas (solo coordinación)</summary>
+          <div className="mt-md flex flex-col gap-lg">
+        <Card>
+          <CardHeader>
+            <CardTitle>Dirección del servidor o de la otra laptop</CardTitle>
+            <CardDescription>
+              Normalmente es la de la oficina ({DEFAULT_CENTRAL_URL}). Cámbiala solo si vas a compartir con la otra laptop sin internet.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-md">
+            <p className="type-body">
+              Conexión con la oficina:{" "}
+              {online ? (
+                <Badge variant="success"><Cloud aria-hidden="true" />En línea</Badge>
+              ) : offline ? (
+                <Badge variant="offline"><CloudOff aria-hidden="true" />Sin conexión</Badge>
+              ) : (
+                <Badge variant="secondary">Comprobando</Badge>
+              )}
+            </p>
+            <form
+              className="flex flex-wrap items-end gap-md"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setCentralUrl(draft);
+                setDraft(draft.trim() || DEFAULT_CENTRAL_URL);
+                void syncNow();
+              }}
+            >
+              <div className="flex min-w-0 flex-1 flex-col gap-xs">
+                <Label htmlFor="central-url">Dirección</Label>
+                <Input
+                  id="central-url"
+                  type="url"
+                  inputMode="url"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder={DEFAULT_CENTRAL_URL}
+                />
+              </div>
+              <Button type="submit" variant="outline" disabled={draft.trim() === centralUrl}>
+                Guardar dirección
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+            <HubToggle />
+          </div>
+        </details>
+      )}
     </section>
   );
 }

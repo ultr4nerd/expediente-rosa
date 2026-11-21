@@ -121,7 +121,7 @@ function PatientHeader({ record }: { record: PatientRecord }) {
           <div className="flex flex-col">
             <span className="type-folio">{record.folio}</span>
             <span className="type-caption">
-              {final ? (record.provisionalFolio && !isSeedFolio(record.provisionalFolio) ? `antes ${record.provisionalFolio}` : "definitivo") : "provisional"}
+              {final ? (record.provisionalFolio && !isSeedFolio(record.provisionalFolio) ? `antes ${record.provisionalFolio}` : "definitivo") : "provisional: se confirma al conectarse"}
             </span>
           </div>
         </div>
