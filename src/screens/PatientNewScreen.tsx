@@ -145,7 +145,7 @@ export function PatientNewScreen({ prefill }: { prefill?: RegistrationPrefill } 
         // ISS-0018: typed in from a paper contingency sheet.
         ...(paper.fromPaper ? [paperIntakeEvent(patientId, normalizePaperFolio(paper.paperFolio)!, actor, now)] : []),
       ]);
-      toast.success(`Paciente registrada con folio provisional ${provisionalFolio}.`);
+      toast.success(`Paciente registrada con folio provisional ${provisionalFolio}. Se confirma al conectarse.`);
       go({ name: "patient", patientId });
     } catch {
       toast.error("No se pudo guardar. Tus datos siguen aquí: intenta de nuevo.");

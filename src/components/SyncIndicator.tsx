@@ -117,7 +117,7 @@ export function formatTime(iso?: string): string | undefined {
 }
 
 export function pendingLabel(n: number): string {
-  return n === 1 ? "1 pendiente" : `${n} pendientes`;
+  return n === 1 ? "1 por enviar" : `${n} por enviar`;
 }
 
 export function SyncIndicator() {
@@ -130,7 +130,7 @@ export function SyncIndicator() {
       onClick={() => void syncNow()}
       disabled={syncing}
       aria-live="polite"
-      title="Sincronizar ahora"
+      title="Enviar y recibir ahora"
       className="flex min-h-control items-center gap-sm rounded-md px-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       {status.connectivity === "unknown" ? (

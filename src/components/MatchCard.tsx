@@ -34,6 +34,7 @@ export function FolioTag({ folio, provisionalFolio }: { folio: string; provision
             ? "border-border bg-card text-foreground"
             : "border-dashed border-warning-border bg-warning-subtle text-on-warning-subtle",
         )}
+        title={final ? undefined : "Folio provisional: se confirma al conectarse"}
       >
         {folio}
         {!final && <span className="sr-only"> (provisional)</span>}

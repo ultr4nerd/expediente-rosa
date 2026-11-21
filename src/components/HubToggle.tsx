@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
-import { Loader2, Radio, Wifi } from "lucide-react";
+import { Copy, Loader2, Radio, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,11 +31,21 @@ export function HubToggle() {
     try {
       const next = await invoke<HubInfo>(info.running ? "hub_stop" : "hub_start");
       setInfo(next);
-      toast.success(next.running ? "Esta laptop ya es el hub de la jornada." : "Hub detenido.");
+      toast.success(next.running ? "Esta laptop ya comparte los registros con la otra." : "Esta laptop dejó de compartir.");
     } catch (err) {
-      toast.error(`No se pudo iniciar el hub. ${typeof err === "string" ? err : ""}`.trim());
+      toast.error(`No se pudo empezar a compartir. ${typeof err === "string" ? err : ""}`.trim());
     } finally {
       setBusy(false);
+    }
+  }
+
+  const address = info?.url ?? `http://<ip-de-esta-laptop>:${info?.port ?? 8788}`;
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(address);
+      toast.success("Dirección copiada.");
+    } catch {
+      toast.error("No se pudo copiar. Escríbela a mano en la otra laptop.");
     }
   }
 
@@ -44,46 +54,60 @@ export function HubToggle() {
       <CardHeader>
         <CardTitle className="flex items-center gap-sm">
           <Radio aria-hidden="true" className="size-5" />
-          Hub sin internet
+          Compartir con la otra laptop (sin internet)
         </CardTitle>
         <CardDescription>
-          Una laptop recibe y comparte los registros por la red local (wifi o hotspot), sin internet. Los folios
-          definitivos siguen llegando de la central cuando vuelva la red.
+          Las dos laptops pueden pasarse la información sin internet si están en la misma red Wi‑Fi, por ejemplo el
+          hotspot de un celular aunque no tenga datos.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-md">
         {!isTauri ? (
           <p className="type-body text-muted-foreground">Disponible solo en la app de escritorio.</p>
         ) : (
-          <>
-            <div className="flex flex-wrap items-center gap-md">
-              <Button
-                role="switch"
-                aria-checked={!!info?.running}
-                variant={info?.running ? "outline" : "default"}
-                disabled={!info || busy}
-                onClick={toggle}
-              >
-                {busy ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Wifi aria-hidden="true" />}
-                {info?.running ? "Dejar de ser el hub" : "Esta laptop es el hub"}
-              </Button>
-              {info?.running ? (
-                <Badge variant="success">Hub activo</Badge>
-              ) : (
-                <Badge variant="outline">Hub apagado</Badge>
-              )}
-            </div>
-            {info?.running && (
-              <div className="flex flex-col gap-xs rounded-control bg-surface-sunken p-md">
-                <span className="type-body">En la otra laptop, escribe esta dirección de la central y sincroniza:</span>
-                <span className="type-folio select-all">{info.url ?? `http://<ip-de-esta-laptop>:${info.port}`}</span>
-                <span className="type-caption text-muted-foreground">
-                  Las dos laptops deben estar en la misma red. Si Windows pregunta por el firewall, permite el acceso en redes privadas.
-                </span>
+          <ol className="flex flex-col gap-md">
+            <li className="flex flex-col gap-xs">
+              <span className="type-body-strong">1. Conecta las dos laptops a la misma red Wi‑Fi o al hotspot de un celular.</span>
+            </li>
+            <li className="flex flex-col gap-sm">
+              <span className="type-body-strong">2. En esta laptop, activa «Compartir desde esta laptop».</span>
+              <div className="flex flex-wrap items-center gap-md">
+                <Button
+                  role="switch"
+                  aria-checked={!!info?.running}
+                  variant={info?.running ? "outline" : "default"}
+                  disabled={!info || busy}
+                  onClick={toggle}
+                >
+                  {busy ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Wifi aria-hidden="true" />}
+                  {info?.running ? "Dejar de compartir" : "Compartir desde esta laptop"}
+                </Button>
+                {info?.running ? (
+                  <Badge variant="success">Compartiendo</Badge>
+                ) : (
+                  <Badge variant="outline">Sin compartir</Badge>
+                )}
               </div>
+            </li>
+            {info?.running && (
+              <li className="flex flex-col gap-sm rounded-control bg-surface-sunken p-md">
+                <span className="type-body-strong">
+                  3. En la otra laptop, abre «Enviar y recibir», escribe esta dirección y pulsa «Sincronizar ahora»:
+                </span>
+                <div className="flex flex-wrap items-center gap-md">
+                  <span className="type-title font-mono select-all">{address}</span>
+                  <Button variant="outline" onClick={copy}>
+                    <Copy aria-hidden="true" />Copiar
+                  </Button>
+                </div>
+              </li>
             )}
-          </>
+          </ol>
         )}
+        <p className="type-caption text-muted-foreground">
+          Los folios definitivos se asignan después, cuando alguna laptop se conecte a internet. En Windows puede
+          aparecer un aviso del firewall: elige «Permitir».
+        </p>
       </CardContent>
     </Card>
   );

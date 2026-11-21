@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <nav aria-label="Principal" className="order-last flex w-full gap-sm xl:order-none xl:w-auto">
           <Button {...nav("search")}><Search aria-hidden="true" />Buscar</Button>
           <Button {...nav("follow-up")}><ClipboardList aria-hidden="true" />Seguimiento</Button>
-          <Button {...nav("sync")}><RefreshCw aria-hidden="true" />Sincronización</Button>
+          <Button {...nav("sync")}><RefreshCw aria-hidden="true" />Enviar y recibir</Button>
         </nav>
         <div className="ml-auto flex items-center gap-sm">
           <SyncIndicator />
