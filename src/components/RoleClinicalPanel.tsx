@@ -1,6 +1,6 @@
 // ISS-0013: clinical part of a patient's record, filtered by the simulated role.
 // - capturista: identity/contact live elsewhere; here sensitive history, service fields and
-//   results show a locked placeholder ("Visible solo para personal médico").
+//   results show a locked placeholder ("Oculto para tu rol").
 // - medico/admin: everything, sensitive history behind an explicit "Mostrar".
 // - patologo: service fields and results (needs them to report), not the sexual history.
 // - patologo/medico: record or correct a result per service (`result.recorded`).
@@ -20,12 +20,17 @@ import { ResultForm } from "./ResultForm";
 import { ResultView, formatDate } from "./ResultView";
 
 const yesNo = (v?: boolean) => (v === undefined ? undefined : v ? "Sí" : "No");
-// Option codes ("aparentemente_sano") read as words ("Aparentemente sano").
-const words = (code: string) => {
-  const s = code.replace(/_/g, " ");
-  return s.charAt(0).toUpperCase() + s.slice(1);
+// Codes stored by the visit form (VisitNewScreen) -> the label staff saw when capturing.
+const CODE_LABEL: Record<string, string> = {
+  ninguno: "Ninguno", embarazo: "Embarazo", puerperio: "Puerperio", lactancia: "Lactancia",
+  posmenopausia: "Posmenopausia", histerectomia: "Histerectomía",
+  aparentemente_sano: "Aparentemente sano", cervicitis: "Cervicitis", sangrado: "Sangrado",
+  lesion_visible: "Lesión visible", no_visible: "No se observa",
+  tabaquismo: "Tabaquismo", vph_previo: "VPH previo", its: "ITS", multiples_parejas: "Múltiples parejas",
+  anticonceptivos: "Anticonceptivos hormonales",
 };
-const list = (v?: string[]) => (v && v.length ? v.map(words).join(", ") : undefined);
+const label = (v: string) => CODE_LABEL[v] ?? v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, " ");
+const list = (v?: string[]) => (v && v.length ? v.map(label).join(", ") : undefined);
 
 const CITOLOGY_KIND: Record<CitologiaFields["citologyKind"], string> = {
   primera_vez: "Primera vez en la vida",
@@ -57,7 +62,7 @@ export function RoleHistory({ history, role }: { history: StableHistory; role: R
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="type-heading">Antecedentes</CardTitle>
+        <CardTitle><h3 className="type-heading">Antecedentes</h3></CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-md">
         <dl className="grid gap-md sm:grid-cols-2">
@@ -81,7 +86,7 @@ function VisitServices({ visit, role }: { visit: VisitRecord; role: Role }) {
   if (visit.services.length === 0) return null;
   return (
     <section className="flex flex-col gap-md" aria-label={`Visita del ${formatDate(visit.date)}`}>
-      <h2 className="type-heading">Visita del {formatDate(visit.date)} · {visit.site}</h2>
+      <h3 className="type-heading">Visita del {formatDate(visit.date)} · {visit.site}</h3>
       {visit.services.map((s) => <ServiceCard key={s.serviceId} service={s} role={role} />)}
     </section>
   );

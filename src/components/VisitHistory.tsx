@@ -1,6 +1,7 @@
 // Stable history in "confirmar" mode (ISS-0010): one click confirms it unchanged (history.confirmed);
 // "Editar" opens the fields. Hidden for roles that cannot see sensitive data.
-import { Check, Lock, Pencil } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
+import { RoleLocked } from "./RoleSensitive";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { StableHistory } from "@/domain/events";
@@ -9,7 +10,7 @@ import { AutofillBadge, ChoiceGroup, VisitField, VisitGroup } from "./VisitField
 
 export type HistoryMode = "pending" | "confirmed" | "edit";
 
-const yesNo = (v?: boolean) => (v === undefined ? "Sin dato" : v ? "Sí" : "No");
+const yesNo = (v?: boolean) => (v === undefined ? "Sin registro" : v ? "Sí" : "No");
 
 export function historyRows(h: StableHistory): Array<[string, string]> {
   const rows: Array<[string, string]> = [];
@@ -40,10 +41,8 @@ export function VisitHistory({
   if (!canSee) {
     return (
       <VisitGroup title="Antecedentes">
-        <p className="flex items-center gap-sm rounded-md bg-surface-sunken p-md type-caption text-muted-foreground">
-          <Lock className="size-5 shrink-0" aria-hidden="true" />
-          •••• Oculto para tu rol. Los confirma el médico.
-        </p>
+        <RoleLocked label="Antecedentes" />
+        <p className="type-caption text-muted-foreground">Los confirma el médico en su turno.</p>
       </VisitGroup>
     );
   }

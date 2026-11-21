@@ -20,7 +20,8 @@ const AFFILIATION_LABEL: Record<string, string> = { ninguno: "Ninguna", otro: "O
 
 function formatBirth(iso: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  return m ? `${m[3]}/${m[2]}/${m[1]}` : iso || "Sin registro";
+  const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  return m ? `${Number(m[3])} ${months[Number(m[2]) - 1]} ${m[1]}` : iso || "Sin registro";
 }
 
 /** Folio EIRA per DESIGN.md: final = solid border; provisional = dashed warning + the word "provisional". */
@@ -48,12 +49,12 @@ function IdentityColumn({ record, role }: { record: PatientRecord; role: string 
   const id = record.identity;
   const rows: Array<[string, string]> = [
     ["Fecha de nacimiento", formatBirth(id.birthDate)],
-    ["Estado de nacimiento", id.birthState || "Sin registro"],
+    ["Entidad de nacimiento", id.birthState || "Sin registro"],
     ["Municipio", id.municipality || "Sin registro"],
-    ["Domicilio", id.residence || "Sin registro"],
+    ["Residencia habitual", id.residence || "Sin registro"],
     ["Teléfono", id.phone || "Sin registro"],
-    ["Derechohabiencia", AFFILIATION_LABEL[id.affiliation] ?? id.affiliation],
-    ["Registrada en", record.created ? `Equipo ${record.created.device}` : "Sin registro"],
+    ["Afiliación", AFFILIATION_LABEL[id.affiliation] ?? id.affiliation],
+    ["Registrada en", record.created ? `Laptop ${record.created.device}` : "Sin registro"],
   ];
   return (
     <div className="flex flex-col gap-sm rounded-card border bg-surface-raised p-md" aria-label={`${role}: ${id.fullName}`}>
@@ -144,7 +145,7 @@ export function DuplicatesPanel({ className, source }: { className?: string; sou
           </CardTitle>
         </CardHeader>
         <CardContent className="type-body text-on-warning-subtle">
-          Estas pacientes se registraron en equipos distintos sin red y se parecen mucho. Revisa los datos y decide;
+          Estas pacientes se registraron en laptops distintas sin red y se parecen mucho. Revisa los datos y decide;
           nada se une sin tu confirmación.
         </CardContent>
       </Card>

@@ -33,7 +33,7 @@ export function LoginScreen() {
         <Card className="w-full max-w-prose">
           <CardHeader>
             <Wordmark withEndorsement />
-            <CardTitle className="type-title">Iniciar jornada</CardTitle>
+            <CardTitle><h1 className="type-title">Iniciar jornada</h1></CardTitle>
             <CardDescription>Elige tu usuario. Todo se guarda cifrado en esta laptop.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -44,10 +44,10 @@ export function LoginScreen() {
                   <Button
                     key={u.id}
                     type="button"
-                    variant={u.id === selected.id ? "default" : "outline"}
-                    className="justify-between"
+                    variant="outline"
+                    className={u.id === selected.id ? "justify-between border-primary bg-secondary text-secondary-foreground hover:bg-secondary" : "justify-between"}
                     aria-pressed={u.id === selected.id}
-                    onClick={() => { setSelected(u); setError(null); }}
+                    onClick={() => { setSelected(u); setError(null); document.getElementById("pin")?.focus(); }}
                   >
                     <span>{u.name}</span>
                     <span className="type-label">{ROLE_LABEL[u.role]}</span>
@@ -56,9 +56,9 @@ export function LoginScreen() {
               </fieldset>
               <div className="flex flex-col gap-sm">
                 <Label htmlFor="pin">PIN</Label>
-                <Input id="pin" type="password" inputMode="numeric" autoComplete="off" value={pin} onChange={(e) => setPin(e.target.value)} aria-invalid={error ? true : undefined} />
-                {error && <p role="alert" className="text-danger">{error}</p>}
-                <p className="text-muted-foreground type-label">Demo: PIN {selected.pin} (usuarios ficticios).</p>
+                <Input id="pin" autoFocus type="password" inputMode="numeric" autoComplete="off" value={pin} onChange={(e) => setPin(e.target.value)} aria-invalid={error ? true : undefined} />
+                {error && <p role="alert" className="type-caption text-danger">{error}</p>}
+                <p className="type-caption text-muted-foreground">Demo: PIN {selected.pin} (usuarios ficticios).</p>
               </div>
               <Button type="submit" size="lg">Entrar</Button>
             </form>

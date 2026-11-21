@@ -5,7 +5,7 @@ import { Eye, EyeOff, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export const LOCKED_TEXT = "Visible solo para personal médico";
+export const LOCKED_TEXT = "Oculto para tu rol"; // design/DESIGN.md "Sensitive data by role"
 
 /** Locked placeholder: `••••` on a sunken surface with a lock icon and the reason. */
 export function RoleLocked({ label, className }: { label?: string; className?: string }) {
