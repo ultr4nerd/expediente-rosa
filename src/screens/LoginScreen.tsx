@@ -30,7 +30,7 @@ export function LoginScreen() {
     <div className="grid min-h-screen bg-background md:grid-cols-2">
       <img src={inicio} alt="Mujeres de una comunidad junto a una doctora" className="hidden h-full w-full object-cover md:block" />
       <main className="flex items-center justify-center p-lg">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-prose">
           <CardHeader>
             <Wordmark withEndorsement />
             <CardTitle className="type-title">Iniciar jornada</CardTitle>
