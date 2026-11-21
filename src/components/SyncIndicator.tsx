@@ -4,11 +4,14 @@ import { useEffect, useSyncExternalStore } from "react";
 import { Cloud, CloudOff, Clock, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { SyncStatus } from "@/domain/ports";
-import { platform } from "@/platform";
+import { isTauri, platform } from "@/platform";
+import { deviceInfo } from "@/platform/tauri";
 import { recordsSource } from "@/app/useRecords";
 
 export const DEFAULT_CENTRAL_URL = "http://localhost:8787";
-const URL_KEY = "er.centralUrl";
+// Keyed by device: two instances on one machine (the demo) share localStorage, and pointing B at A's
+// hub must not repoint A.
+let urlKey = "er.centralUrl";
 const POLL_MS = 10_000;
 
 interface SyncState {
@@ -19,7 +22,7 @@ interface SyncState {
 
 function readUrl(): string {
   try {
-    return localStorage.getItem(URL_KEY) || DEFAULT_CENTRAL_URL;
+    return localStorage.getItem(urlKey) || DEFAULT_CENTRAL_URL;
   } catch {
     return DEFAULT_CENTRAL_URL;
   }
@@ -32,6 +35,15 @@ let state: SyncState = {
 };
 const listeners = new Set<() => void>();
 
+const urlReady: Promise<void> = isTauri
+  ? deviceInfo()
+      .then(({ device }) => {
+        urlKey = `er.centralUrl.${device}`;
+        set({ centralUrl: readUrl() });
+      })
+      .catch(() => undefined)
+  : Promise.resolve();
+
 function set(patch: Partial<SyncState>) {
   state = { ...state, ...patch };
   listeners.forEach((l) => l());
@@ -41,10 +53,12 @@ export async function syncNow(): Promise<void> {
   if (state.syncing) return;
   set({ syncing: true });
   try {
+    await urlReady;
     const status = await platform.sync.syncNow(state.centralUrl);
     set({ status });
-    // Re-project so pulled events (other device's patients, final folios) show up on every screen.
-    if (status.connectivity === "online") await recordsSource().refresh();
+    // Re-project on every poll: pulled events, and events a peer pushed to this laptop as hub (ISS-0021),
+    // must show up on every screen even while the central is unreachable.
+    await recordsSource().refresh();
   } catch (e) {
     set({ status: { ...state.status, lastError: String(e) } });
   } finally {
@@ -64,7 +78,7 @@ export async function refreshSyncStatus(): Promise<void> {
 export function setCentralUrl(url: string) {
   const clean = url.trim() || DEFAULT_CENTRAL_URL;
   try {
-    localStorage.setItem(URL_KEY, clean);
+    localStorage.setItem(urlKey, clean);
   } catch {
     // localStorage unavailable: keep it for this session only
   }
