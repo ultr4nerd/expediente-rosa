@@ -4,13 +4,12 @@
 
 10 open / 11 done
 
-## todo (9)
+## todo (8)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
 | [ISS-0001](issues/ISS-0001-mvp-expediente-rosa-reto-1-eira.md) | P0 | epic | product |  |  | Expediente Rosa MVP (EIRA Challenge 1) (20 children, 9 open) |
 | [ISS-0014](issues/ISS-0014-readme-de-entrega-y-lamina-real-simulado.md) | P0 | feature | docs |  |  | Submission README and real/simulated slide |
-| [ISS-0015](issues/ISS-0015-build-de-windows-en-ci.md) | P1 | feature | ci |  |  | Windows build in CI |
 | [ISS-0016](issues/ISS-0016-exportar-csv-sin-datos-personales.md) | P1 | feature | domain |  |  | Export CSV without personal data |
 | [ISS-0017](issues/ISS-0017-respaldo-y-restauracion-json-del-registro-de-eventos.md) | P1 | feature | ui |  |  | JSON backup and restore of the event log |
 | [ISS-0018](issues/ISS-0018-hoja-de-contingencia-imprimible.md) | P1 | feature | ui |  |  | Printable contingency sheet |
@@ -18,11 +17,12 @@
 | [ISS-0020](issues/ISS-0020-conflicto-por-campo-con-resolucion-humana.md) | P1 | feature | domain |  |  | Per-field conflict with human resolution |
 | [ISS-0021](issues/ISS-0021-hub-lan-embebido-entre-laptops.md) | P2 | feature | rust |  |  | Embedded LAN hub between laptops |
 
-## in-progress (1)
+## in-progress (2)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
 | [ISS-0012](issues/ISS-0012-folio-definitivo-y-duplicado-offline-con-vinculacion.md) | P0 | feature | domain | thread-b |  | Final folio and offline duplicate with linking |
+| [ISS-0015](issues/ISS-0015-build-de-windows-en-ci.md) | P1 | feature | ci | thread-a |  | Windows build in CI |
 
 ## done (11)
 
