@@ -54,6 +54,26 @@ fn device_info(state: State<'_, AppState>) -> DeviceInfo {
     DeviceInfo { device: state.device.clone(), data_dir: state.data_dir.display().to_string() }
 }
 
+/// Writes a user-requested export (backup JSON, CSV) to the Downloads folder, or `<data_dir>/exports`
+/// when there is none, and returns the full path. Browser downloads are unreliable inside the webview.
+#[tauri::command]
+fn save_export(app: tauri::AppHandle, state: State<'_, AppState>, name: String, contents: String) -> Result<String, String> {
+    let dir = app.path().download_dir().unwrap_or_else(|_| state.data_dir.join("exports"));
+    save_to(&dir, &name, &contents)
+}
+
+fn save_to(dir: &std::path::Path, name: &str, contents: &str) -> Result<String, String> {
+    let filtered: String = name.chars().filter(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_')).collect();
+    let safe = filtered.trim_start_matches('.');
+    if safe.is_empty() {
+        return Err("nombre de archivo no válido".into());
+    }
+    std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
+    let path = dir.join(safe);
+    std::fs::write(&path, contents).map_err(|e| e.to_string())?;
+    Ok(path.display().to_string())
+}
+
 fn env_or(name: &str, default: &str) -> String {
     std::env::var(name).ok().filter(|v| !v.trim().is_empty()).unwrap_or_else(|| default.to_string())
 }
@@ -79,7 +99,23 @@ pub fn run() {
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![append_events, list_events, sync_now, sync_status, device_info])
+        .invoke_handler(tauri::generate_handler![append_events, list_events, sync_now, sync_status, device_info, save_export])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::save_to;
+
+    #[test]
+    fn save_to_writes_file_and_strips_path_tricks() {
+        let dir = std::env::temp_dir().join(format!("er-export-{}", std::process::id()));
+        let path = save_to(&dir, "../respaldo-A-2026-11-21.json", "[]").unwrap();
+        assert!(path.ends_with("respaldo-A-2026-11-21.json"));
+        assert!(path.starts_with(dir.to_str().unwrap()));
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), "[]");
+        assert!(save_to(&dir, "///", "x").is_err());
+        std::fs::remove_dir_all(dir).ok();
+    }
 }
