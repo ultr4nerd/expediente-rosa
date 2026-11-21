@@ -60,7 +60,7 @@ EIRA lleva prevención de cáncer de mama y cervicouterino a comunidades de Jali
 
 ## Cómo probarlo
 
-**Instalador de Windows:** [release v0.1.0](https://github.com/ultr4nerd/expediente-rosa/releases/tag/v0.1.0). Lo genera el CI; no está firmado y no se ha probado en una laptop Windows.
+**Instalador de Windows:** [release v0.1.0](https://github.com/ultr4nerd/hilo/releases/tag/v0.1.0). Lo genera el CI; no está firmado y no se ha probado en una laptop Windows.
 
 **Requisitos:** Node 24+, pnpm, Rust (estable), Docker.
 
