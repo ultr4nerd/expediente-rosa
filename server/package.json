@@ -1,0 +1,26 @@
+{
+  "name": "expediente-rosa-central",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Central sync server for Expediente Rosa: Hono + Valkey (event stream, dedup, folio counter)",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node src/index.ts",
+    "dev": "node --watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.11",
+    "hono": "^4.13.19",
+    "iovalkey": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.1"
+  }
+}

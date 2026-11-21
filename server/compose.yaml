@@ -1,0 +1,32 @@
+# Central for Expediente Rosa: Valkey (event stream + folio counter) and the Hono server.
+# Run from the repo root: docker compose -f server/compose.yaml up
+name: expediente-rosa-central
+services:
+  valkey:
+    image: valkey/valkey:8.1
+    # Every write is fsynced to the AOF before the reply: an acknowledged event survives a crash.
+    command: ["valkey-server", "--appendonly", "yes", "--appendfsync", "always"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - valkey-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  server:
+    build: .
+    environment:
+      VALKEY_URL: redis://valkey:6379
+      PORT: "8787"
+    ports:
+      - "8787:8787"
+    depends_on:
+      valkey:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  valkey-data:
