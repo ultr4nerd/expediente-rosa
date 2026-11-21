@@ -3,12 +3,14 @@ import { FileCheck2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { ServiceRecord } from "@/domain/projection";
 import type { Role } from "@/domain/events";
-import { ROLE_LABEL } from "@/app/session";
+import { DEMO_USERS, ROLE_LABEL } from "@/app/session";
 import { bethesdaLabel, biradsLabel, canSeeClinical, followUpLabel } from "@/domain/results";
 import { DataRow, RoleLocked } from "./RoleSensitive";
 
 export const formatDate = (iso: string) => {
-  const d = new Date(iso);
+  // A bare YYYY-MM-DD is a calendar day: parse it as local, or UTC midnight shows the day before in Mexico.
+  const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  const d = day ? new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3])) : new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   const month = d.toLocaleDateString("es-MX", { month: "short" }).replace(".", "");
   return `${d.getDate()} ${month} ${d.getFullYear()}`;
@@ -22,7 +24,7 @@ export function ResultView({ service, role }: { service: ServiceRecord; role: Ro
   const header = (
     <p className="flex flex-wrap items-center gap-sm type-caption text-muted-foreground">
       <FileCheck2 aria-hidden="true" className="size-5" />
-      Resultado del {formatDate(r.at)} · {ROLE_LABEL[r.role]} ({r.author})
+      Resultado del {formatDate(r.at)} · {DEMO_USERS.find((u) => u.id === r.author)?.name ?? r.author} · {ROLE_LABEL[r.role]}
       {service.results.length > 1 && ` · corregido ${service.results.length - 1} ${service.results.length === 2 ? "vez" : "veces"}`}
     </p>
   );

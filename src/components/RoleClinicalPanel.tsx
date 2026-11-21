@@ -20,7 +20,12 @@ import { ResultForm } from "./ResultForm";
 import { ResultView, formatDate } from "./ResultView";
 
 const yesNo = (v?: boolean) => (v === undefined ? undefined : v ? "Sí" : "No");
-const list = (v?: string[]) => (v && v.length ? v.join(", ") : undefined);
+// Option codes ("aparentemente_sano") read as words ("Aparentemente sano").
+const words = (code: string) => {
+  const s = code.replace(/_/g, " ");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+const list = (v?: string[]) => (v && v.length ? v.map(words).join(", ") : undefined);
 
 const CITOLOGY_KIND: Record<CitologiaFields["citologyKind"], string> = {
   primera_vez: "Primera vez en la vida",
