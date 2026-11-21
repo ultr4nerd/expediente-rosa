@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hilo · Notas de presentador</title>
+<style>
+  :root{--bg:#1f1a19;--card:#2b2422;--fg:#fcf8f6;--muted:#bcaea8;--rosa:#e07aa0;--ok:#5fbf86;--warn:#f0b54a;--bad:#ef6b5e}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;gap:16px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  h1{font-size:22px;color:var(--rosa)}
+  .timer{font-variant-numeric:tabular-nums;font-size:clamp(56px,12vw,120px);font-weight:800;line-height:1;color:var(--ok)}
+  .timer.warn{color:var(--warn)} .timer.bad{color:var(--bad)}
+  .bar{height:10px;background:#3a3230;border-radius:99px;overflow:hidden}
+  .bar>div{height:100%;background:var(--rosa);width:0}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  button{background:var(--card);color:var(--fg);border:1px solid #4a403d;border-radius:12px;padding:12px 16px;font-size:16px;cursor:pointer}
+  button.primary{background:var(--rosa);color:#1f1a19;border-color:var(--rosa);font-weight:700}
+  .step{background:var(--card);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px}
+  .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:15px}
+  .who{background:var(--rosa);color:#1f1a19;border-radius:99px;padding:2px 12px;font-weight:700}
+  .title{font-size:clamp(24px,4vw,34px);font-weight:800}
+  .do{font-size:clamp(18px,2.6vw,22px);line-height:1.4}
+  .say{font-size:clamp(20px,3vw,26px);line-height:1.4;color:#ffd9e6;font-style:italic;border-left:4px solid var(--rosa);padding-left:12px}
+  .next{color:var(--muted);font-size:17px}
+  .next b{color:var(--fg)}
+  .help{color:var(--muted);font-size:13px}
+  .late{color:var(--bad);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1>Hilo · Notas de presentador</h1>
+  <div class="controls">
+    <button id="openDeck">Abrir presentación</button>
+    <button id="start" class="primary">▶ Iniciar</button>
+    <button id="reset">↺ Reiniciar</button>
+  </div>
+</header>
+
+<div class="timer" id="timer">0:00</div>
+<div class="bar"><div id="progress"></div></div>
+
+<section class="step" id="step"></section>
+<div class="next" id="next"></div>
+
+<div class="controls">
+  <button id="prev">← Anterior</button>
+  <button id="nextBtn" class="primary">Siguiente →</button>
+</div>
+<p class="help">Teclado: espacio = iniciar o pausar · ← → = paso · R = reiniciar. "Abrir presentación" abre las diapositivas en otra ventana; en los pasos 1 y 7 cambian solas.</p>
+
+<script>
+const STEPS = [
+  { t:[0,15], who:"Tú", title:"El problema", slide:1,
+    do:"Diapositiva 1 en pantalla.",
+    say:"EIRA atiende hasta 150 mujeres por jornada, sin señal, con papel y Excel. Si una mujer regresa, la registran otra vez y nadie ve su historia. Nos dijeron: “después de 100 expedientes ya no sé si estoy capturando bien”." },
+  { t:[15,35], who:"Miguel", title:"Reconocerla sin adivinar",
+    do:"Miguel (Laura) busca “Maria Ejenplo” → dos Marías con el porqué → “Es la misma persona”.",
+    say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona. Siempre se busca antes de registrar." },
+  { t:[35,55], who:"Miguel", title:"No volver a preguntar",
+    do:"Se ve el candado “Oculto para tu rol” → “Nueva visita”: 15 datos del historial, “Subsecuente” → Guardar.",
+    say:"La capturista no ve lo sensible. Hilo ya sabe 15 datos de María: solo se captura lo de hoy. Menos captura, menos errores, más tiempo para atender." },
+  { t:[55,65], who:"Tú", title:"Sin señal",
+    do:"Señala “Sin conexión” arriba.",
+    say:"Todo esto pasó sin señal. Y otra brigada, en otra laptop, registró a la misma mujer sin saberlo." },
+  { t:[65,85], who:"Tú + Miguel", title:"Vuelve la señal",
+    do:"Tú: en la terminal escondida, start server. Ambos: “Enviar y recibir”. Miguel: Posibles duplicados → “Vincular (misma persona)”.",
+    say:"Vuelve la señal. Todo se junta en la oficina, cada expediente recibe su folio oficial sin repetirse, y Hilo avisa que es la misma persona. Una persona confirma." },
+  { t:[85,105], who:"Tú", title:"El médico (privacidad)",
+    do:"Sales y entras como Ana (2222) → María → “Mostrar” en antecedentes.",
+    say:"Como médico veo la visita de hoy y los datos sensibles. Cada acceso queda registrado. Si falta tiempo, solo dilo y salta." },
+  { t:[105,120], who:"Tú", title:"Cierre", slide:5,
+    do:"Diapositiva 5 en pantalla.",
+    say:"Todo lo que vieron funciona hoy; el inicio de sesión es de demostración y falta probarlo en sus laptops Windows. Hilo. Una mujer, una historia." },
+];
+const TOTAL = 120;
+let i = 0, running = false, startAt = 0, elapsed = 0, deck = null;
+
+const $ = (id) => document.getElementById(id);
+const fmt = (s) => { const n = Math.max(0, Math.floor(s)); return Math.floor(n/60) + ":" + String(n%60).padStart(2,"0"); };
+
+function render() {
+  const s = STEPS[i];
+  $("step").innerHTML =
+    `<div class="meta"><span class="who">${s.who}</span><span>Paso ${i+1} de ${STEPS.length}</span><span>${fmt(s.t[0])}–${fmt(s.t[1])}</span><span id="late"></span></div>
+     <div class="title">${s.title}</div>
+     <div class="do">${s.do}</div>
+     <div class="say">“${s.say.replace(/^“|”$/g,"")}”</div>`;
+  const n = STEPS[i+1];
+  $("next").innerHTML = n ? `Siguiente: <b>${n.title}</b> · ${n.who}` : "Último paso";
+  if (s.slide && deck && !deck.closed) { try { deck.location.hash = "#" + s.slide; } catch (e) {} }
+  tick();
+}
+function now() { return running ? elapsed + (performance.now() - startAt) / 1000 : elapsed; }
+function tick() {
+  const e = now();
+  const el = $("timer");
+  el.textContent = fmt(e);
+  el.className = "timer" + (e >= TOTAL ? " bad" : e >= 100 ? " warn" : "");
+  $("progress").style.width = Math.min(100, e / TOTAL * 100) + "%";
+  const late = $("late");
+  if (late) late.innerHTML = running && e > STEPS[i].t[1] + 3 ? `<span class="late">vas tarde</span>` : "";
+}
+function toggle() {
+  if (running) { elapsed = now(); running = false; $("start").textContent = "▶ Continuar"; }
+  else { startAt = performance.now(); running = true; $("start").textContent = "⏸ Pausa"; }
+}
+function reset() { running = false; elapsed = 0; i = 0; $("start").textContent = "▶ Iniciar"; render(); }
+function go(d) { i = Math.min(STEPS.length - 1, Math.max(0, i + d)); render(); }
+
+$("start").onclick = toggle;
+$("reset").onclick = reset;
+$("prev").onclick = () => go(-1);
+$("nextBtn").onclick = () => go(1);
+$("openDeck").onclick = () => { deck = window.open("index.html#1", "hilo-deck"); };
+document.addEventListener("keydown", (e) => {
+  if (e.key === " ") { e.preventDefault(); toggle(); }
+  else if (e.key === "ArrowRight") go(1);
+  else if (e.key === "ArrowLeft") go(-1);
+  else if (e.key.toLowerCase() === "r") reset();
+});
+setInterval(tick, 250);
+render();
+</script>
+</body>
+</html>
