@@ -4,17 +4,17 @@
 
 4 open / 17 done
 
-## todo (2)
+## todo (1)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
 | [ISS-0001](issues/ISS-0001-mvp-expediente-rosa-reto-1-eira.md) | P0 | epic | product |  |  | Expediente Rosa MVP (EIRA Challenge 1) (20 children, 3 open) |
-| [ISS-0014](issues/ISS-0014-readme-de-entrega-y-lamina-real-simulado.md) | P0 | feature | docs |  |  | Submission README and real/simulated slide |
 
-## in-progress (2)
+## in-progress (3)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
+| [ISS-0014](issues/ISS-0014-readme-de-entrega-y-lamina-real-simulado.md) | P0 | feature | docs | integrator |  | Submission README and real/simulated slide |
 | [ISS-0015](issues/ISS-0015-build-de-windows-en-ci.md) | P1 | feature | ci | thread-a |  | Windows build in CI |
 | [ISS-0021](issues/ISS-0021-hub-lan-embebido-entre-laptops.md) | P2 | feature | rust | thread-b |  | Embedded LAN hub between laptops |
 
