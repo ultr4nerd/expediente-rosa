@@ -41,22 +41,22 @@ export function FollowUpScreen() {
       {items.length > 0 && (
         <ul className="flex flex-col gap-sm" aria-label="Pacientes con seguimiento pendiente">
           {items.map((i) => (
-            <li key={i.serviceId} className="flex flex-wrap items-center justify-between gap-md rounded-xl border bg-card p-md shadow-sm">
-              <div className="flex min-w-0 flex-col gap-xs">
+            <li key={i.serviceId} className="flex flex-wrap items-center justify-between gap-md rounded-xl border bg-card p-md shadow-sm sm:flex-nowrap">
+              <div className="flex min-w-0 flex-1 flex-col gap-xs">
                 <div className="flex flex-wrap items-center gap-sm">
                   <span className="type-body-strong">{i.fullName}</span>
                   <FolioTag folio={i.folio} />
                 </div>
-                <div className="flex flex-wrap items-center gap-sm">
+                <div className="flex items-center gap-sm">
                   {clinical ? (
                     <Badge variant={i.priority === 1 ? "danger" : "secondary"} title={i.reason}>{CATEGORY_LABEL[i.category]}</Badge>
                   ) : (
                     <Badge variant="secondary">{NON_CLINICAL_LABEL}</Badge>
                   )}
-                  {clinical && <span className="type-caption text-muted-foreground">{i.reason}</span>}
+                  {clinical && <span className="min-w-0 type-caption text-muted-foreground">{i.reason}</span>}
                 </div>
               </div>
-              <div className="flex items-center gap-md">
+              <div className="flex shrink-0 items-center gap-md">
                 <span className={i.overdue ? "flex items-center gap-xs type-label text-danger" : "flex items-center gap-xs type-label"}>
                   {i.overdue ? <AlertTriangle className="size-5" aria-hidden="true" /> : <CalendarClock className="size-5" aria-hidden="true" />}
                   {i.overdue ? "Vencido el " : "Antes del "}

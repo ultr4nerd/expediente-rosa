@@ -15,6 +15,7 @@ import { useNavigation } from "@/app/navigation";
 import { useRecords } from "@/app/useRecords";
 import type { Affiliation, EventType } from "@/domain/events";
 import { isFinalFolio } from "@/domain/factory";
+import { isSeedFolio } from "@/domain/seed";
 import { ageOn } from "@/domain/identity";
 import { resolvePatient, type PatientRecord, type TimelineEntry } from "@/domain/projection";
 import { cn } from "@/lib/utils";
@@ -120,7 +121,7 @@ function PatientHeader({ record }: { record: PatientRecord }) {
           <div className="flex flex-col">
             <span className="type-folio">{record.folio}</span>
             <span className="type-caption">
-              {final ? (record.provisionalFolio ? `antes ${record.provisionalFolio}` : "definitivo") : "provisional"}
+              {final ? (record.provisionalFolio && !isSeedFolio(record.provisionalFolio) ? `antes ${record.provisionalFolio}` : "definitivo") : "provisional"}
             </span>
           </div>
         </div>

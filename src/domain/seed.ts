@@ -7,6 +7,9 @@ import type { EventStore } from "./ports";
 /** Seed events come from the office laptop "S", so they never consume a field device's provisional counter. */
 export const SEED_DEVICE = "S";
 
+/** True for seed provisional folios ("S-0001"): an artifact of the demo data, not a real laptop folio. */
+export const isSeedFolio = (folio: string) => folio.startsWith(`${SEED_DEVICE}-`);
+
 const capturista: Actor = { device: SEED_DEVICE, author: "u-laura", role: "capturista", jornadaId: "" };
 const medico: Actor = { ...capturista, author: "u-ana", role: "medico" };
 const patologo: Actor = { ...capturista, author: "u-jorge", role: "patologo" };

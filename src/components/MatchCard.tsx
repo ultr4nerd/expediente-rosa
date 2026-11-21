@@ -3,6 +3,7 @@ import { forwardRef } from "react";
 import { Check, Minus, MapPin, UserCheck, UserX, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { isFinalFolio } from "@/domain/factory";
+import { isSeedFolio } from "@/domain/seed";
 import { cn } from "@/lib/utils";
 import type { MatchCandidate } from "@/domain/matching";
 
@@ -40,7 +41,7 @@ export function FolioTag({ folio, provisionalFolio }: { folio: string; provision
       {!final ? (
         <span className="type-caption text-on-warning-subtle">provisional</span>
       ) : (
-        provisionalFolio && provisionalFolio !== folio && (
+        provisionalFolio && provisionalFolio !== folio && !isSeedFolio(provisionalFolio) && (
           <span className="type-caption text-muted-foreground">antes {provisionalFolio}</span>
         )
       )}
