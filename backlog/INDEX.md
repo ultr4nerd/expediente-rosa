@@ -4,7 +4,7 @@
 
 6 open / 15 done
 
-## todo (5)
+## todo (4)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -12,13 +12,13 @@
 | [ISS-0014](issues/ISS-0014-readme-de-entrega-y-lamina-real-simulado.md) | P0 | feature | docs |  |  | Submission README and real/simulated slide |
 | [ISS-0015](issues/ISS-0015-build-de-windows-en-ci.md) | P1 | feature | ci |  |  | Windows build in CI |
 | [ISS-0019](issues/ISS-0019-contador-de-recaptura-evitada.md) | P1 | feature | ui |  |  | Avoided re-entry counter |
-| [ISS-0021](issues/ISS-0021-hub-lan-embebido-entre-laptops.md) | P2 | feature | rust |  |  | Embedded LAN hub between laptops |
 
-## in-progress (1)
+## in-progress (2)
 
 | id | pri | kind | area | owner | due | title |
 | --- | --- | --- | --- | --- | --- | --- |
 | [ISS-0012](issues/ISS-0012-folio-definitivo-y-duplicado-offline-con-vinculacion.md) | P0 | feature | domain | thread-b |  | Final folio and offline duplicate with linking |
+| [ISS-0021](issues/ISS-0021-hub-lan-embebido-entre-laptops.md) | P2 | feature | rust | thread-b |  | Embedded LAN hub between laptops |
 
 ## done (15)
 
