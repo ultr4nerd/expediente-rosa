@@ -82,15 +82,16 @@ Events pulled from the central are inserted with `synced = 1`. Events whose `dev
 | `POST /events` | `{ device: string, events: Event[] }` | `{ accepted: string[], duplicates: string[] }` (event ids) |
 | `GET /events` | `?after=<streamId or 0>` | `{ events: Event[], cursor: string }` |
 
-**Valkey layout:**
+**Valkey layout:** every key carries the `{er}` hash tag so all keys touched by the atomic Lua script live in the same cluster hash slot (Valkey Cluster requires multi-key scripts to stay in one slot).
 
-- Stream `er:events`: field `json`.
-- Key `er:seen:<eventId>`: dedup marker.
-- Counter `er:folio:<year>`.
-- Hash `er:folio:by-patient`: patientId → folio, so a retry never assigns twice.
-- **Dedup and append** happen in one Lua script: `SET er:seen:<id> 1 NX`; if it was set, `XADD er:events * json <event>`.
-- **Folio assignment:** for every newly accepted `patient.created`, the server checks `er:folio:by-patient`. If the patient has no folio yet, it runs `INCR er:folio:<year>`, formats it as `<year>-<NNNN>` (4 digits, zero-padded), stores it in the hash and appends a server-authored `folio.assigned` event: `device: "central"`, `role: "admin"`, `author: "central"`, same `jornadaId`. That event reaches every device on the next pull.
+- Stream `{er}:events`: field `json`.
+- Key `{er}:seen:<eventId>`: dedup marker.
+- Counter `{er}:folio:<year>`.
+- Hash `{er}:folio:by-patient`: patientId → folio, so a retry never assigns twice.
+- **Dedup and append** happen in one Lua script: `SET {er}:seen:<id> 1 NX`; if it was set, `XADD {er}:events * json <event>`.
+- **Folio assignment:** for every newly accepted `patient.created`, the server checks `{er}:folio:by-patient`. If the patient has no folio yet, it runs `INCR {er}:folio:<year>`, formats it as `<year>-<NNNN>` (4 digits, zero-padded), stores it in the hash and appends a server-authored `folio.assigned` event: `device: "central"`, `role: "admin"`, `author: "central"`, same `jornadaId`. That event reaches every device on the next pull.
 - **Persistence:** `appendonly yes`, `appendfsync always`.
+- **Access control:** the server connects as the least-privilege ACL user `er-central` (`server/valkey/users.acl`, credentials in `VALKEY_URL`), which can run only the commands push/pull/stats need and only on `{er}:*` keys. The compose passwords are demo values.
 
 ### Sync algorithm (Rust `sync_now`)
 

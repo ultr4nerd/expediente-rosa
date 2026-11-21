@@ -46,6 +46,8 @@ Every pushed event goes through one Lua script (`src/push.lua`), run atomically 
 
 Because the dedup check, the append and the counter run in the same script, a retried push, two devices syncing at once or a crash between requests can never duplicate an entry or skip or repeat a folio. The year comes from the `patient.created` event's `at`, not the server clock. Valkey runs with `appendonly yes` and `appendfsync always`, so an acknowledged event is on disk.
 
+Every key carries the `{er}` hash tag so the multi-key script stays legal on Valkey Cluster (one hash slot). Access is least-privilege: `valkey/users.acl` defines an `er-central` user (the only one the app connects as, via `VALKEY_URL`) limited to the commands push/pull/stats need on `{er}:*` keys; the passwords in `users.acl`/`compose.yaml` are demo values.
+
 Clients cannot push `folio.assigned` (400); re-sending one they pulled counts as a duplicate.
 
-Not done (demo scope): auth, TLS, cluster mode (the keys do not share a hash slot, so the script needs a single Valkey node), stream trimming or archiving.
+Not done (demo scope): auth on the HTTP API, TLS, running in cluster mode (the `{er}` hash tag and ACL are in place, but the demo runs a single Valkey node), stream trimming or archiving.

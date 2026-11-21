@@ -7,10 +7,10 @@ import type { Valkey } from "iovalkey";
 
 /** Valkey key layout (docs/specs/sync-protocol-and-platform-contract.md). */
 export const KEYS = {
-  stream: "er:events",
-  seen: (eventId: string) => `er:seen:${eventId}`,
-  folioCounter: (year: string) => `er:folio:${year}`,
-  folioByPatient: "er:folio:by-patient",
+  stream: "{er}:events",
+  seen: (eventId: string) => `{er}:seen:${eventId}`,
+  folioCounter: (year: string) => `{er}:folio:${year}`,
+  folioByPatient: "{er}:folio:by-patient",
 } as const;
 
 /** Max events returned by one pull; the client keeps the cursor and pulls again. */

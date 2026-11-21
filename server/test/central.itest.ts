@@ -3,8 +3,8 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { Valkey } from "iovalkey";
 import { createApp, folioYear, KEYS } from "../src/app.ts";
 
-// DB 15 keeps tests away from demo data in DB 0.
-const valkey = new Valkey(process.env.VALKEY_TEST_URL ?? "redis://localhost:6379/15");
+// DB 15 keeps tests away from demo data in DB 0. Same least-privilege user as the app.
+const valkey = new Valkey(process.env.VALKEY_TEST_URL ?? "redis://er-central:er-demo-pass@localhost:6379/15");
 const app = createApp(valkey);
 
 interface Ev {
@@ -157,6 +157,13 @@ describe("central", () => {
     expect((await push("B", [view])).body).toEqual({ accepted: [view.id], duplicates: [] });
     const { events } = await pull("0");
     expect(events).toEqual([view]);
+  });
+
+  it("every key written by a push carries the {er} hash tag (one cluster slot)", async () => {
+    await push("A", [ev("patient.created", randomUUID(), "A"), ev("privacy.accepted", randomUUID(), "A")]);
+    const keys = await valkey.keys("*");
+    expect(keys.length).toBeGreaterThan(0);
+    for (const k of keys) expect(k).toContain("{er}");
   });
 
   it("GET /stats reports stream length and folio counter", async () => {

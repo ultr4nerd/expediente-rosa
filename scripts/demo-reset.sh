@@ -17,10 +17,12 @@ pkill -f "target/release/expediente-rosa" 2>/dev/null || true
 
 echo "› Flushing the central"
 "${COMPOSE[@]}" up -d --wait valkey
-"${COMPOSE[@]}" exec -T valkey valkey-cli FLUSHALL >/dev/null
+# The default user is the ops account in valkey/users.acl; the app connects as er-central.
+VALKEY_CLI=(valkey-cli --no-auth-warning -a "${ER_ADMIN_PASS:-er-admin-demo-pass}")
+"${COMPOSE[@]}" exec -T valkey "${VALKEY_CLI[@]}" FLUSHALL >/dev/null
 # Start the yearly counter after the seed's historical folios so the demo shows 2026-0143, 2026-0144
 # (the pitch script). Seed folios are <year>-01NN and live only on the laptops.
-"${COMPOSE[@]}" exec -T valkey valkey-cli SET "er:folio:$(date +%Y)" "${ER_FOLIO_START:-142}" >/dev/null
+"${COMPOSE[@]}" exec -T valkey "${VALKEY_CLI[@]}" SET "{er}:folio:$(date +%Y)" "${ER_FOLIO_START:-142}" >/dev/null
 "${COMPOSE[@]}" down
 
 echo "› Wiping local data: $DATA_A $DATA_B"

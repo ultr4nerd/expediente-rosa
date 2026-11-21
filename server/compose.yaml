@@ -5,13 +5,15 @@ services:
   valkey:
     image: valkey/valkey:8.1
     # Every write is fsynced to the AOF before the reply: an acknowledged event survives a crash.
-    command: ["valkey-server", "--appendonly", "yes", "--appendfsync", "always"]
+    # ACL: the app uses er-central (see valkey/users.acl), scoped to {er}:* keys.
+    command: ["valkey-server", "--appendonly", "yes", "--appendfsync", "always", "--aclfile", "/etc/valkey/users.acl"]
     ports:
       - "6379:6379"
     volumes:
       - valkey-data:/data
+      - ./valkey/users.acl:/etc/valkey/users.acl:ro
     healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
+      test: ["CMD", "valkey-cli", "--user", "er-central", "--pass", "er-demo-pass", "--no-auth-warning", "ping"]
       interval: 2s
       timeout: 2s
       retries: 15
@@ -19,7 +21,8 @@ services:
   server:
     build: .
     environment:
-      VALKEY_URL: redis://valkey:6379
+      # Demo credential only; production injects a real secret.
+      VALKEY_URL: redis://er-central:er-demo-pass@valkey:6379
       PORT: "8787"
     ports:
       - "8787:8787"
