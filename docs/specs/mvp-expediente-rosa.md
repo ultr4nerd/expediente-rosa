@@ -56,6 +56,7 @@ A single digital patient record for EIRA Movimiento Rosa A.C. (Challenge 1, Vibe
 | `folio.assigned` | final folio `AAAA-NNNN` issued by the central server |
 | `patients.linked` | surviving record, alias record, reason |
 | `patients.marked_distinct` | pair of records confirmed as different people |
+| `record.viewed` | audit: a clinical role revealed sensitive data (`section`, optional `serviceId`); shown to admin only |
 
 **Rules:**
 

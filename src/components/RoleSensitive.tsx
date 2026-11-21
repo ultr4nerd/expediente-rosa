@@ -30,18 +30,21 @@ export function RoleLocked({ label, className }: { label?: string; className?: s
 
 /**
  * Shows `children` only to an allowed role, after an explicit "Mostrar".
- * Not allowed: the locked placeholder. The reveal is not logged yet (no event type for it).
+ * Not allowed: the locked placeholder. `onReveal` runs on "Mostrar" so the caller can append
+ * the `record.viewed` audit event (ISS-0023).
  */
 export function RoleSensitive({
   allowed,
   label,
   children,
   revealed: initiallyRevealed = false,
+  onReveal,
 }: {
   allowed: boolean;
   label: string;
   children: ReactNode;
   revealed?: boolean;
+  onReveal?: () => void;
 }) {
   const [revealed, setRevealed] = useState(initiallyRevealed);
   if (!allowed) return <RoleLocked label={label} />;
@@ -50,7 +53,13 @@ export function RoleSensitive({
       <div className="flex flex-wrap items-center gap-sm rounded-control bg-surface-sunken px-md py-sm text-on-surface-muted">
         <Lock aria-hidden="true" className="size-5 shrink-0" />
         <span className="type-caption">{label}: dato sensible oculto</span>
-        <Button variant="outline" onClick={() => setRevealed(true)}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setRevealed(true);
+            onReveal?.();
+          }}
+        >
           <Eye aria-hidden="true" />Mostrar
         </Button>
       </div>
