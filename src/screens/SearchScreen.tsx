@@ -107,7 +107,11 @@ export function SearchScreen() {
   }
 
   function onInputKey(e: KeyboardEvent<HTMLInputElement>) {
-    if ((e.key === "ArrowDown" || e.key === "Enter") && results.length) {
+    // A scanned or pasted folio (QR readers type it and press Enter) with one exact match opens it directly.
+    if (e.key === "Enter" && results.length === 1 && looksLikeFolio(query.trim())) {
+      e.preventDefault();
+      go({ name: "patient", patientId: results[0].patient.patientId });
+    } else if ((e.key === "ArrowDown" || e.key === "Enter") && results.length) {
       e.preventDefault();
       listRef.current?.querySelector<HTMLButtonElement>("[data-match-primary]")?.focus();
     } else if (e.key === "Escape") {
