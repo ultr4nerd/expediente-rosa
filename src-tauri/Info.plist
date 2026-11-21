@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
   <key>NSCameraUsageDescription</key>
-  <string>Expediente Rosa usa la cámara solo para leer el código QR de la Cartilla EIRA. No guarda imágenes.</string>
+  <string>Hilo usa la cámara solo para leer el código QR de la Cartilla EIRA. No guarda imágenes.</string>
 </dict>
 </plist>

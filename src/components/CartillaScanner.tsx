@@ -147,7 +147,7 @@ function CartillaScanner({ onFolio }: { onFolio: (folio: string) => void }) {
       </div>
       <canvas ref={canvasRef} className="hidden" />
       <p role="status" className="type-caption text-muted-foreground">
-        {other ? "Ese código no es un folio de Expediente Rosa. Prueba con la cartilla." : "Apunta la cámara al código de la cartilla."}
+        {other ? "Ese código no es un folio de Hilo. Prueba con la cartilla." : "Apunta la cámara al código de la cartilla."}
       </p>
       {devices.length > 1 && (
         <div className="flex flex-col gap-xs">
