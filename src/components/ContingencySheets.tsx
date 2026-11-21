@@ -2,8 +2,8 @@
 // for when a laptop fails mid-jornada. Opens as a full-page overlay; "Imprimir" uses window.print(),
 // which works in every Tauri webview. Print styles: only the sheets are printed, one per page.
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { FileText, Printer, X } from "lucide-react";
+import { FileText } from "lucide-react";
+import { PrintOverlay } from "@/components/PrintOverlay";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,54 +72,28 @@ function ContingencySheets({ onClose }: { onClose: () => void }) {
     return () => { alive = false; };
   }, [count]);
 
-  // Only the sheets print: hide the app while the overlay is open.
-  useEffect(() => {
-    const root = document.getElementById("root");
-    root?.classList.add("print:hidden");
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => {
-      root?.classList.remove("print:hidden");
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
-
-  function print() {
+  function rememberPrinted() {
     const last = folios[folios.length - 1];
     if (last) writeLastPrinted(device, Number(last.split("-")[1]));
-    window.print();
   }
 
-  return createPortal(
-    <div role="dialog" aria-modal="true" aria-label="Hojas de contingencia" className="fixed inset-0 z-50 overflow-auto bg-background print:static print:overflow-visible">
-      <div className="sticky top-0 flex flex-wrap items-end justify-between gap-md border-b bg-card px-lg py-md print:hidden">
+  return (
+    <PrintOverlay
+      title="Hojas de contingencia"
+      hint="Imprímelas antes de la jornada. Si la laptop falla, se llenan a mano y luego se capturan con su folio de papel."
+      printLabel={`Imprimir ${folios.length} hojas`}
+      onPrint={rememberPrinted}
+      onClose={onClose}
+      controls={
         <div className="flex flex-col gap-xs">
-          <h2 className="type-heading">Hojas de contingencia</h2>
-          <p className="type-caption text-muted-foreground">
-            Imprímelas antes de la jornada. Si la laptop falla, se llenan a mano y luego se capturan con su folio de papel.
-          </p>
+          <Label htmlFor="cs-count">Cuántas hojas</Label>
+          <Input id="cs-count" type="number" min={1} max={50} className="w-control-lg" value={count}
+            onChange={(e) => setCount(Number(e.target.value) || 1)} />
         </div>
-        <div className="flex flex-wrap items-end gap-sm">
-          <div className="flex flex-col gap-xs">
-            <Label htmlFor="cs-count">Cuántas hojas</Label>
-            <Input id="cs-count" type="number" min={1} max={50} className="w-control-lg" value={count}
-              onChange={(e) => setCount(Number(e.target.value) || 1)} />
-          </div>
-          <Button type="button" onClick={print} autoFocus>
-            <Printer aria-hidden="true" />
-            Imprimir {folios.length} hojas
-          </Button>
-          <Button type="button" variant="ghost" onClick={onClose}>
-            <X aria-hidden="true" />
-            Cerrar
-          </Button>
-        </div>
-      </div>
-      <div className="flex flex-col items-center gap-lg p-lg print:block print:p-0">
-        {folios.map((f) => <Sheet key={f} folio={f} device={device} jornadaId={jornadaId} />)}
-      </div>
-    </div>,
-    document.body,
+      }
+    >
+      {folios.map((f) => <Sheet key={f} folio={f} device={device} jornadaId={jornadaId} />)}
+    </PrintOverlay>
   );
 }
 

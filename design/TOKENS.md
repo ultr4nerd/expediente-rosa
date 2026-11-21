@@ -61,6 +61,9 @@ Use names, never values. CSS `var(--color-surface)`, TS `tokens['color.surface']
 - `spacing.lg` 24px — Between groups within a section
 - `spacing.xl` 32px — Between sections of a screen
 - `spacing.2xl` 48px — Margins of empty and home screens
+- `spacing.cartilla-w` 324px — Printed Cartilla EIRA card width: 85.6 mm (ID-1 card) at 96 px per inch
+- `spacing.cartilla-h` 204px — Printed Cartilla EIRA card height: 54 mm (ID-1 card) at 96 px per inch
+- `spacing.cartilla-qr` 112px — QR on the Cartilla EIRA card: about 30 mm, scannable by a phone at arm's length
 - `spacing.control` 44px — Minimum height of buttons, inputs and selects (click target)
 - `spacing.control-lg` 52px — Height of a form's primary action (Guardar, Registrar)
 

@@ -10,6 +10,7 @@ import { PatientContact, authorName, formatDateTime } from "@/components/Patient
 import { RoleClinicalPanel } from "@/components/RoleClinicalPanel";
 import { ConflictBadge } from "@/components/ConflictBadge";
 import { VisitNewButton } from "@/components/VisitNewButton";
+import { CartillaButton } from "@/components/CartillaCard";
 import { useNavigation } from "@/app/navigation";
 import { useRecords } from "@/app/useRecords";
 import type { Affiliation, EventType } from "@/domain/events";
@@ -124,6 +125,7 @@ function PatientHeader({ record }: { record: PatientRecord }) {
           </div>
         </div>
         <ConflictBadge patientId={record.patientId} />
+        <CartillaButton record={record} />
         <VisitNewButton patientId={record.patientId} />
       </div>
     </header>
