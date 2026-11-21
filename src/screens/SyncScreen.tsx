@@ -1,7 +1,7 @@
 // Sync detail: central URL, last sync, pending count and a manual "sync now".
 // Spec: docs/specs/sync-protocol-and-platform-contract.md; UI rules: design/DESIGN.md.
 import { useState } from "react";
-import { Cloud, CloudOff, Loader2, RefreshCw } from "lucide-react";
+import { Cloud, CloudOff, FileText, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,21 +33,25 @@ export function SyncScreen() {
   const online = status.connectivity === "online";
 
   return (
-    <section className="flex w-full max-w-prose flex-col gap-lg">
-      <h1 className="type-title">Sincronización</h1>
-
-      <DuplicatesPanel />
-
-      {platform.kind === "memory" && (
-        <p className="type-body text-muted-foreground">
-          Modo navegador: los datos viven solo en esta pestaña y no se sincronizan.
+    <section className="mx-auto flex w-full max-w-4xl flex-col gap-lg">
+      <header className="flex flex-col gap-xs">
+        <h1 className="type-title">Sincronización</h1>
+        <p className="text-muted-foreground">
+          {platform.kind === "memory"
+            ? "Modo navegador: los datos viven solo en esta pestaña y no se sincronizan."
+            : "Todo se guarda cifrado en esta laptop y se envía a la central cuando vuelve la red."}
         </p>
-      )}
+      </header>
 
+      {/* Decisions a person must take come first. Each panel renders nothing when there is nothing to decide. */}
+      <DuplicatesPanel />
+      <ConflictPanel />
+
+      <div className="grid gap-lg lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Estado</CardTitle>
-          <CardDescription>Todo se guarda en esta laptop y se envía a la central cuando hay red.</CardDescription>
+          <CardTitle><h2 className="type-heading">Estado</h2></CardTitle>
+          <CardDescription>Se sincroniza sola cada 10 segundos cuando hay red.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-md">
           <dl className="grid grid-cols-2 gap-md">
@@ -88,8 +92,8 @@ export function SyncScreen() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dirección de la central</CardTitle>
-          <CardDescription>Por defecto {DEFAULT_CENTRAL_URL}. Cámbiala solo si te lo indica el equipo.</CardDescription>
+          <CardTitle><h2 className="type-heading">Dirección de la central</h2></CardTitle>
+          <CardDescription>Por defecto {DEFAULT_CENTRAL_URL}. Cámbiala solo si te lo indica el equipo de EIRA.</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -118,9 +122,22 @@ export function SyncScreen() {
           </form>
         </CardContent>
       </Card>
-      <ConflictPanel />
-      <BackupPanel />
-      <div><ContingencyButton /></div>
+      </div>
+
+      <div className="grid gap-lg lg:grid-cols-2">
+        <BackupPanel />
+        <section aria-labelledby="contingency-title" className="flex flex-col gap-md rounded-xl border bg-card p-lg shadow-sm">
+          <div className="flex flex-col gap-xs">
+            <h2 id="contingency-title" className="flex items-center gap-sm type-heading">
+              <FileText aria-hidden="true" className="size-5" />Hoja de contingencia
+            </h2>
+            <p className="type-caption text-muted-foreground">
+              Si una laptop falla a media jornada, imprime hojas en papel con folios ya asignados y captúralas después.
+            </p>
+          </div>
+          <div><ContingencyButton /></div>
+        </section>
+      </div>
     </section>
   );
 }

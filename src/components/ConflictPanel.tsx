@@ -14,6 +14,9 @@ import { conflictsOf, fieldLabel, formatValue, isSensitiveField, openConflicts, 
 import type { FieldChange, PatientRecord } from "@/domain/projection";
 import { cn } from "@/lib/utils";
 import { RoleLocked } from "./RoleSensitive";
+import { formatPhone } from "./PatientContact";
+
+const PHONE_FIELDS = new Set(["identity.phone", "identity.phoneAlt"]);
 
 const authorName = (id: string) => DEMO_USERS.find((u) => u.id === id)?.name ?? id;
 
@@ -27,12 +30,14 @@ export function formatDateTime(iso: string): string {
 
 function ContenderOption({
   change,
+  field,
   current,
   hidden,
   busy,
   onKeep,
 }: {
   change: FieldChange;
+  field: string;
   current: boolean;
   hidden: boolean;
   busy: boolean;
@@ -40,10 +45,16 @@ function ContenderOption({
 }) {
   return (
     <div className="flex flex-col gap-sm rounded-card border bg-surface-raised p-md">
-      {hidden ? <RoleLocked label="Valor" /> : <span className="type-body-strong">{formatValue(change.value)}</span>}
-      <span className="flex flex-wrap items-center gap-xs type-caption text-muted-foreground">
-        <Laptop aria-hidden="true" className="size-4" />
-        Equipo {change.device} · {authorName(change.author)} ({ROLE_LABEL[change.role]}) · {formatDateTime(change.at)}
+      {hidden ? (
+        <RoleLocked label="Valor" />
+      ) : (
+        <span className="type-body-strong">
+          {PHONE_FIELDS.has(field) && typeof change.value === "string" ? formatPhone(change.value) : formatValue(change.value)}
+        </span>
+      )}
+      <span className="flex items-start gap-xs type-caption text-muted-foreground">
+        <Laptop aria-hidden="true" className="mt-xs size-4 shrink-0" />
+        <span>Laptop {change.device} · {authorName(change.author)} ({ROLE_LABEL[change.role].toLowerCase()}) · {formatDateTime(change.at)}</span>
       </span>
       {current && <span className="type-caption text-muted-foreground">Se muestra ahora por ser el más reciente.</span>}
       {onKeep && (
@@ -77,19 +88,22 @@ function ConflictCard({ conflict, record, source }: { conflict: FieldConflict; r
   return (
     <Card className="border-danger-border">
       <CardHeader>
-        <CardTitle className="flex flex-wrap items-center gap-sm type-heading">
-          <TriangleAlert aria-hidden="true" className="size-5 text-on-danger-subtle" />
-          {fieldLabel(conflict.field)} de {record.identity.fullName || "paciente sin nombre"}
-          <span className="type-folio text-muted-foreground">{record.folio}</span>
+        <CardTitle>
+          <h3 className="flex flex-wrap items-center gap-sm type-heading">
+            <TriangleAlert aria-hidden="true" className="size-5 text-on-danger-subtle" />
+            {fieldLabel(conflict.field)} de {record.identity.fullName || "paciente sin nombre"}
+            <span className="type-folio text-muted-foreground">{record.folio}</span>
+          </h3>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-md">
-        <p className="type-body">Se cambió en dos equipos sin red. Elige el valor correcto; el otro queda en el historial.</p>
+        <p className="type-body">Se cambió en dos laptops sin red. Elige el valor correcto; el otro queda en el historial.</p>
         <div className="grid gap-md md:grid-cols-2">
           {conflict.contenders.map((c) => (
             <ContenderOption
               key={c.eventId}
               change={c}
+              field={conflict.field}
               current={c.eventId === conflict.head.eventId}
               hidden={hidden}
               busy={busy}

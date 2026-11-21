@@ -47,10 +47,10 @@ describe("Conflictos", () => {
     const html = wrap(<ConflictPanel source={await sourceWith(events)} />);
     expect(html).toContain("Conflictos (1)");
     expect(html).toContain("Teléfono de Rosa Prueba");
-    expect(html).toContain("3415551111");
-    expect(html).toContain("3415552222");
-    expect(html).toContain("Equipo A");
-    expect(html).toContain("Equipo B");
+    expect(html).toContain("341 555 1111");
+    expect(html).toContain("341 555 2222");
+    expect(html).toContain("Laptop A");
+    expect(html).toContain("Laptop B");
     expect(html).toContain("Laura Méndez");
     expect(html).toContain("Dra. Ana Robles");
   });
