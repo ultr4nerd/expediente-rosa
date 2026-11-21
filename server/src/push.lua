@@ -2,11 +2,13 @@
 -- Valkey runs scripts atomically, so no other client can interleave between
 -- the dedup check, the XADD and the folio INCR: no double appends, no folio gaps.
 --
--- KEYS[1] er:seen:<eventId>          dedup marker for the incoming event
--- KEYS[2] er:events                  global event stream (field "json")
--- KEYS[3] er:folio:by-patient        hash patientId -> final folio
--- KEYS[4] er:folio:<year>            yearly folio counter
--- KEYS[5] er:seen:<folioEventId>     dedup marker for the server-authored folio.assigned
+-- KEYS[1] {er}:seen:<eventId>        dedup marker for the incoming event
+-- KEYS[2] {er}:events                global event stream (field "json")
+-- KEYS[3] {er}:folio:by-patient      hash patientId -> final folio
+-- KEYS[4] {er}:folio:<year>          yearly folio counter
+-- KEYS[5] {er}:seen:<folioEventId>   dedup marker for the server-authored folio.assigned
+-- The {er} hash tag keeps every key in one cluster hash slot, as Valkey Cluster
+-- requires for multi-key scripts.
 -- ARGV[1] event JSON
 -- ARGV[2] "1" if the event is patient.created, else "0"
 -- ARGV[3] patientId

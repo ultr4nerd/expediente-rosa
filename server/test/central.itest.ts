@@ -159,6 +159,13 @@ describe("central", () => {
     expect(events).toEqual([view]);
   });
 
+  it("every key written by a push carries the {er} hash tag (one cluster slot)", async () => {
+    await push("A", [ev("patient.created", randomUUID(), "A"), ev("privacy.accepted", randomUUID(), "A")]);
+    const keys = await valkey.keys("*");
+    expect(keys.length).toBeGreaterThan(0);
+    for (const k of keys) expect(k).toContain("{er}");
+  });
+
   it("GET /stats reports stream length and folio counter", async () => {
     await push("A", [ev("patient.created", randomUUID(), "A")]);
     const res = await app.request("/stats?year=2026");
