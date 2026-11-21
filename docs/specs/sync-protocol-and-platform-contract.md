@@ -48,6 +48,7 @@ The JSON form of `EventEnvelope` in `src/domain/events.ts`. All keys are camelCa
 | `sync_now` | `{ centralUrl: string }` | `SyncStatus` (see `ports.ts`) |
 | `sync_status` | none | `SyncStatus` |
 | `device_info` | none | `{ device: string, dataDir: string }` |
+| `save_export` | `{ name: string, contents: string }` | `string` full path written (Downloads, else `<dataDir>/exports`); name is sanitized |
 
 **Environment variables:**
 
