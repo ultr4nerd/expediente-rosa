@@ -5,6 +5,7 @@ import { Search, UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MatchCard } from "@/components/MatchCard";
+import { CartillaScanButton } from "@/components/CartillaScanner";
 import { useRecords } from "@/app/useRecords";
 import { useNavigation } from "@/app/navigation";
 import { useSession } from "@/app/session";
@@ -137,7 +138,8 @@ export function SearchScreen() {
 
       <div role="search" className="flex flex-col gap-sm">
         <label htmlFor="search-q" className="type-label">Nombre, folio o teléfono</label>
-        <div className="relative">
+        <div className="flex gap-sm">
+        <div className="relative flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-md size-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <Input
             id="search-q"
@@ -163,6 +165,8 @@ export function SearchScreen() {
               <X aria-hidden="true" />
             </Button>
           )}
+        </div>
+        <CartillaScanButton onFolio={(f) => { setQuery(f); inputRef.current?.focus(); }} />
         </div>
         <p id="search-hint" className="type-caption text-muted-foreground">
           Acepta errores de dedo, acentos y abreviaturas («Ma.»). Puedes añadir la fecha: «María 15/03/1985».
