@@ -77,7 +77,7 @@ export function ResultForm({ service, onDone }: { service: ServiceRecord; onDone
   }
 
   return (
-    <form onSubmit={save} noValidate className="flex max-w-xl flex-col gap-md" aria-label="Registrar resultado">
+    <form onSubmit={save} noValidate className="flex max-w-prose flex-col gap-md" aria-label="Registrar resultado">
       {type === "citologia" ? (
         <Field id={idFor("bethesda")} label="Resultado Bethesda" error={shown("bethesda")}>
           <Select value={draft.bethesda ?? ""} onValueChange={(v) => set("bethesda", v)}>
