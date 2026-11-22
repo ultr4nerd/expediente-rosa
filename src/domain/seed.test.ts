@@ -6,10 +6,10 @@ describe("seed", () => {
   const events = seedEvents();
   const created = events.filter((e) => e.type === "patient.created");
 
-  it("is deterministic with unique ids and about 30 patients", () => {
+  it("is deterministic with unique ids and 100 patients", () => {
     expect(JSON.stringify(seedEvents())).toBe(JSON.stringify(events));
     expect(new Set(events.map((e) => e.id)).size).toBe(events.length);
-    expect(created.length).toBeGreaterThanOrEqual(28);
+    expect(created.length).toBe(100);
     expect(new Set(created.map((e) => e.patientId)).size).toBe(created.length);
   });
 

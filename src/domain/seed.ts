@@ -1,4 +1,4 @@
-// Fictitious seed data for demos: ~30 patients with past visits, as events with deterministic ids.
+// Fictitious seed data for demos: 100 patients with past visits, as events with deterministic ids.
 // Every name, phone and address here is invented (EIRA limit: never real patients).
 import type { Affiliation, AnyEvent, CitologiaFields, Identity, MamaFields } from "./events";
 import { newEvent, type Actor } from "./factory";
@@ -72,6 +72,29 @@ const PATIENTS: SeedPatient[] = [
   { name: "Laura Fuentes Gallardo", birthDate: "1976-10-29", municipality: "Tapalpa", phone4: "8623", affiliation: "INSABI", jornada: 1, services: ["citologia", "mama"] },
   { name: "Guadalupe Medina Partida", birthDate: "1963-08-06", municipality: "Zapotitlán de Vadillo", phone4: "9734", affiliation: "otro", jornada: 2, services: ["mama"] },
 ];
+
+// 70 more fictitious patients, generated deterministically, so demos show a realistic list (100 in total).
+{
+  const GIVEN = ["Ana", "Brenda", "Cecilia", "Dolores", "Esperanza", "Fabiola", "Gloria", "Hilda", "Irma", "Josefina", "Karla", "Lorena", "Mariana", "Nancy", "Olga", "Paola", "Raquel", "Susana", "Tania", "Valeria", "Ximena", "Zoila", "Alicia", "Bertha", "Consuelo", "Dulce", "Estela", "Flor", "Graciela", "Inés"];
+  const SUR = ["Acosta", "Barajas", "Cisneros", "Duarte", "Escobedo", "Figueroa", "Gallegos", "Huerta", "Ibáñez", "Jaramillo", "Ledesma", "Mojica", "Nieves", "Orozco", "Padilla", "Quintero", "Rosales", "Solís", "Trujillo", "Uribe", "Valdivia", "Zamora", "Arellano", "Bravo", "Carrillo", "Estrada", "Godínez", "Lara", "Meza", "Pineda"];
+  const MUNIS = ["Zapotlán el Grande", "Tuxpan", "Sayula", "Tamazula de Gordiano", "Tecalitlán", "Tonila", "Gómez Farías", "Tapalpa", "Zapotitlán de Vadillo"];
+  const AFF: Affiliation[] = ["INSABI", "IMSS", "ninguno", "ISSSTE", "INSABI", "IMSS", "ninguno"];
+  const SERV: Array<Array<"citologia" | "mama">> = [["citologia"], ["mama"], ["citologia", "mama"]];
+  for (let k = 0; k < 70; k++) {
+    const year = 1956 + ((k * 7) % 44);
+    const month = 1 + ((k * 5) % 12);
+    const day = 1 + ((k * 11) % 28);
+    PATIENTS.push({
+      name: `${GIVEN[k % GIVEN.length]} ${SUR[(k * 7 + 3) % SUR.length]} ${SUR[(k * 13 + 11) % SUR.length]}`,
+      birthDate: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+      municipality: MUNIS[k % MUNIS.length],
+      phone4: String(1000 + ((k * 137) % 9000)).padStart(4, "0"),
+      affiliation: AFF[k % AFF.length],
+      jornada: k % 4,
+      services: SERV[k % SERV.length],
+    });
+  }
+}
 
 const pad = (n: number, w = 3) => String(n).padStart(w, "0");
 // UTC like `new Date().toISOString()`, so (at, id) ordering stays lexical; 15:00Z is 09:00 in Jalisco.
