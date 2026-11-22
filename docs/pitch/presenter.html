@@ -51,32 +51,35 @@
 // One tap = one slide = one note. The phone walks this sequence; the Mac (screen.html) shows the same slide.
 const NOTES = {
   1:  { who:"Los dos", title:"Portada", time:"antes de empezar",
-        do:"Esperen a que les den la palabra. Toca <b>▶ Iniciar</b> y luego <b>Siguiente</b>.",
+        do:"Esperen la palabra. Toca <b>▶ Iniciar</b> y luego <b>Siguiente</b>.",
         say:"Somos Hilo, para EIRA Movimiento Rosa." },
-  2:  { who:"Tú", title:"El problema", time:"0:00–0:15",
-        do:"Solo habla; la diapositiva acompaña.",
-        say:"María viajó horas para su Papanicolaou. Si regresa y nadie encuentra su historia, empieza de cero. EIRA atiende hasta 150 mujeres así, sin señal, con papel y Excel." },
-  6:  { who:"Miguel en la app", title:"Buscar a María", time:"0:15–0:35",
-        do:"<b>Cmd+Tab a Hilo.</b> Miguel (Laura) escribe “Maria Ejenplo” → salen dos Marías con el porqué → <b>Es la misma persona</b>.",
-        say:"Aunque esté mal escrito, la encuentra y explica por qué. Hay otra María parecida: Hilo nunca junta expedientes solo, decide una persona." },
-  7:  { who:"Miguel en la app", title:"Su historia llega sola", time:"0:35–0:55",
-        do:"Se ve el candado “Oculto para tu rol” → <b>Nueva visita</b>: “15 datos del historial”, “Subsecuente” → Guardar. Arriba se ve <b>“Sin conexión”</b>.",
-        say:"Lo más íntimo de María no lo ve la capturista. Y Hilo ya trae 15 datos de su historia: solo se anota lo de hoy." },
-  8:  { who:"Tú", title:"Sin señal… y vuelve", time:"0:55–1:25",
-        do:"<b>Cmd+Tab a la presentación.</b> No sincronizamos en vivo: la diapositiva lo cuenta.",
-        say:"Todo esto lo hicimos sin señal, y otra brigada pudo registrar a la misma mujer en otra laptop. Cuando vuelve la señal, todo se junta en la oficina: un folio oficial sin repetirse, un solo expediente, y una persona confirma si es la misma mujer." },
-  9:  { who:"Tú", title:"Privacidad", time:"1:25–1:40",
-        do:"Sigue en la presentación. Solo dilo.",
-        say:"El médico sí ve lo íntimo, y queda registro de quién lo consultó. Nada sale por WhatsApp ni por enlaces abiertos. Y Hilo le da a EIRA la lista de quién debe volver, y a ella su cartilla con QR." },
-  12: { who:"Tú", title:"Cierre", time:"1:40–2:00",
-        do:"Habla mirando al jurado.",
-        say:"Para otra campaña o municipio: la misma app y la misma central. Cero licencias, las laptops que EIRA ya tiene y un servidor de 10 a 30 dólares al mes. Es un prototipo con datos ficticios; lo siguiente es probarlo con EIRA en una jornada real. Hilo. Una mujer, una historia." },
-  13: { who:"Preguntas", title:"Piloto y costos", time:"preguntas",
+  2:  { who:"Tú", title:"El problema", time:"0:00–0:25",
+        do:"Solo habla. Despacio.",
+        say:"EIRA viaja horas a comunidades sin señal.<br>Atiende hasta 150 mujeres en un día, con papel y Excel.<br>Si María regresa y nadie encuentra su historia, empieza de cero." },
+  6:  { who:"Miguel en la app", title:"Buscar a María", time:"0:25–0:50",
+        do:"<b>Cmd+Tab a Hilo.</b> Miguel escribe “Maria Ejenplo” → <b>Es la misma persona</b>.",
+        say:"Aunque esté mal escrito, Hilo la encuentra y dice por qué.<br>Y nunca junta expedientes solo: decide una persona." },
+  7:  { who:"Miguel en la app", title:"Su historia llega sola", time:"0:50–1:15",
+        do:"<b>Nueva visita</b> → se ven los datos del historial → Guardar. Señala <b>“Sin conexión”</b>.",
+        say:"Hilo ya trae su historia: solo se anota lo de hoy.<br>Y todo esto, sin internet." },
+  8:  { who:"Tú", title:"Vuelve la señal", time:"1:15–1:40",
+        do:"<b>Cmd+Tab a la presentación.</b> Solo cuéntalo.",
+        say:"Dos brigadas, dos laptops, sin señal.<br>Cuando vuelve el internet, todo se junta solo:<br>un folio oficial, sin repetirse, y un solo expediente por mujer." },
+  9:  { who:"Tú", title:"Lo íntimo, protegido", time:"1:40–1:55",
+        do:"Solo dilo.",
+        say:"La capturista no ve lo íntimo. El médico sí, y queda registro de quién lo vio." },
+  11: { who:"Tú", title:"Segura por diseño", time:"1:55–2:30",
+        do:"<b>La idea central.</b> Mira al jurado.",
+        say:"Los datos se quedan en la laptop de EIRA, <b>cifrados</b>.<br>No es una página web: no hay un enlace que alguien pueda abrir.<br>Es una app nativa en Rust, para Windows, donde ellas ya trabajan.<br>El instalador pesa 4 megas: corre hasta en una laptop vieja." },
+  13: { who:"Tú", title:"Cierre", time:"2:30–3:00",
+        do:"Habla mirando al jurado. Termina con la frase.",
+        say:"Cero licencias, las laptops que ya tienen y un servidor pequeño.<br>Es un prototipo con datos ficticios; lo siguiente es una jornada real con EIRA.<br><b>Hilo. Una mujer, una historia.</b>" },
+  14: { who:"Preguntas", title:"Piloto y costos", time:"preguntas",
         do:"Úsala si preguntan por costos, riesgos u operación.",
-        say:"¿Datos? Cifrados en la laptop, permisos por rol, bitácora, sin enlaces. ¿Otra campaña? Misma app; nuevos formularios, siguiente paso. ¿Windows? Compila en CI; falta probarlo en sus laptops." },
+        say:"¿Seguridad? Base cifrada, roles, bitácora, sin enlaces. La clave por laptop y el respaldo cifrado son del piloto.<br>¿Windows? Compila en CI; falta probarlo en sus laptops.<br>¿Costo? Licencias cero; servidor de 10 a 30 dólares al mes." },
 };
-const SEQ = [1, 2, 6, 7, 8, 9, 12, 13];
-const TOTAL = 120;
+const SEQ = [1, 2, 6, 7, 8, 9, 11, 13, 14];
+const TOTAL = 180;
 let pos = 0, running = false, startAt = 0, elapsed = 0;
 const remote = location.protocol.startsWith("http");
 const $ = (id) => document.getElementById(id);
@@ -102,7 +105,7 @@ function now() { return running ? elapsed + (performance.now() - startAt) / 1000
 function tick() {
   const e = now();
   $("timer").textContent = fmt(e);
-  $("timer").className = "timer" + (e >= TOTAL ? " bad" : e >= 100 ? " warn" : "");
+  $("timer").className = "timer" + (e >= TOTAL ? " bad" : e >= 150 ? " warn" : "");
   $("progress").style.width = Math.min(100, (e / TOTAL) * 100) + "%";
 }
 function toggle() {
